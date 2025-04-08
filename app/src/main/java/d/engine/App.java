@@ -3,12 +3,19 @@
  */
 package d.engine;
 
+import d.engine.geomety.Point3D;
+import d.engine.geomety.Triangle;
+import d.engine.gui.window;;
+
 public class App {
-    public String getGreeting() {
-        return "Hello World!";
-    }
 
     public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+        Triangle triangle = new Triangle(new Point3D(0, 0, 0),
+                                         new Point3D(1, 0, 0),
+                                         new Point3D(1, 1, 1));
+
+        new window();
+
+        System.out.println("hello");
     }
 }
