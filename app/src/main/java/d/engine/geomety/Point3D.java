@@ -1,7 +1,7 @@
 package d.engine.geomety;
 
 public class Point3D {
-    public final double x, y, z;
+    public double x, y, z;
 
     public Point3D(double x, double y, double z) {
         this.x = x;
@@ -13,6 +13,14 @@ public class Point3D {
         return new PositionVector3D(this.x - other.x,
                                     this.y - other.y,
                                     this.z - other.z);
+    }
+
+    public Point3D projectOnto(Point3D) {}
+
+    public void applyScalar(double scalar) {
+        this.x *= scalar;
+        this.y *= scalar;
+        this.z *= scalar;
     }
 
     public boolean equals(Point3D other) {

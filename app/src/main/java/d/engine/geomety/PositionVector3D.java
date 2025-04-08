@@ -7,6 +7,10 @@ public class PositionVector3D extends Point3D {
         super(x, y, z);
     }
 
+    public double dotProduct(Point3D o) {
+        return this.x * o.x + this.y * o.y + this.z *o.z;
+    }
+
     public PositionVector3D crossProduct(Point3D o) {
         return new PositionVector3D(
                 this.y*o.z - this.z*o.y,

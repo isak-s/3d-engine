@@ -3,19 +3,34 @@
  */
 package d.engine;
 
+import java.util.stream.Stream;
+
 import d.engine.geomety.Point3D;
+import d.engine.geomety.Shape3D;
 import d.engine.geomety.Triangle;
-import d.engine.gui.window;;
+import d.engine.gui.SingleShapeWindow;
 
 public class App {
 
     public static void main(String[] args) {
-        Triangle triangle = new Triangle(new Point3D(0, 0, 0),
-                                         new Point3D(1, 0, 0),
-                                         new Point3D(1, 1, 1));
+        Point3D A = new Point3D(0, 0, 0);
+        Point3D B = new Point3D(1, 0, 0);
+        Point3D C = new Point3D(0.5, Math.sqrt(3) / 2, 0);
+        Point3D D = new Point3D(0.5, Math.sqrt(3) / 6, Math.sqrt(6) / 3);
 
-        new window();
+        // Define the faces (triangles)
+        Triangle triangle1 = new Triangle(A, B, C);  // Face ABC
+        Triangle triangle2 = new Triangle(A, B, D);  // Face ABD
+        Triangle triangle3 = new Triangle(B, C, D);  // Face BCD
+        Triangle triangle4 = new Triangle(A, C, D);  // Face ACD
 
-        System.out.println("hello");
+        Triangle[] triangles = new Triangle[] {triangle1, triangle2, triangle3, triangle4};
+
+        Stream.of(triangles).forEach(t -> t.applyScalar(50));
+
+        Shape3D tetrahedron = new Shape3D(triangles);
+
+        new SingleShapeWindow(tetrahedron);
+
     }
 }
