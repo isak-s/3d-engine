@@ -5,6 +5,8 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import d.engine.geomety.Shape3D;
+import d.engine.geomety.Triangle;
+import d.engine.util.Constants;
 
 public class SingleShapeWindow {
 
@@ -25,30 +27,38 @@ public class SingleShapeWindow {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
+                setBackground(Color.black);
                 renderShape(g); // Custom method to render Shape3D
             }
         };
 
         frame.add(panel);
 
-        frame.setSize(new Dimension(500, 500));
+        frame.setSize(new Dimension(Constants.SCREEN_HEIGHT, Constants.SCREEN_WIDTH));
 
         frame.setVisible(true);
     }
 
     private void renderShape(Graphics g) {
 
-        // sort all shapes into a linked list with ascending order
-
-        // Project shapes onto the screen plane in that order
-
-        // if a shape is projected onto the projection of another projection,
-            // reconstruct the new shape to only show until the intersection.
-
-        // draw all projections
-
         Graphics2D g2d = (Graphics2D) g;
 
         g2d.setColor(Color.white);
+
+        shape.forEach((Triangle t) -> {
+
+            Point p1 = t.getA().projectOntoScreenPlane();
+            Point p2 = t.getB().projectOntoScreenPlane();
+            Point p3 = t.getC().projectOntoScreenPlane();
+
+            g2d.drawLine(p1.x, p1.y, p2.x, p2.y);
+            g2d.drawLine(p2.x, p2.y, p3.x, p3.y);
+            g2d.drawLine(p3.x, p3.y, p1.x, p1.y);
+            }
+        );
+
+        // TODO: Sorting shapes by proximity to viewer etc..
+
+
     }
 }

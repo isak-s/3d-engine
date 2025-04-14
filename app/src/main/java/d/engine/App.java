@@ -3,6 +3,8 @@
  */
 package d.engine;
 
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import d.engine.geomety.Point3D;
@@ -26,11 +28,23 @@ public class App {
 
         Triangle[] triangles = new Triangle[] {triangle1, triangle2, triangle3, triangle4};
 
-        Stream.of(triangles).forEach(t -> t.applyScalar(50));
-
         Shape3D tetrahedron = new Shape3D(triangles);
 
+        Point3D center = tetrahedron.computeCentroid();
+
+        double offsetX = -center.x;
+        double offsetY = -center.y;
+        double offsetZ = -center.z + 25; // also push it back
+
+        Stream.of(triangles).collect(Collectors.toSet()).stream().forEach((Triangle t) -> {
+
+            t.applyScalar(2);
+
+            t.translate(offsetX, offsetY, offsetZ);
+        });
+
         new SingleShapeWindow(tetrahedron);
+
 
     }
 }
