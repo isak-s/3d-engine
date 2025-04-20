@@ -5,7 +5,7 @@ import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
 public class Shape3D implements Iterable<Triangle> {
-    Triangle[] sides;
+    public Triangle[] sides;
 
     PositionVector3D screenPlaneX = new PositionVector3D(1, 0, 0);
     PositionVector3D screenPlaneY = new PositionVector3D(0, 1, 0);
@@ -49,6 +49,15 @@ public class Shape3D implements Iterable<Triangle> {
         }
 
         return new Point3D(sumX / count, sumY / count, sumZ / count);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (Triangle s : sides) {
+            sb.append(s.getA().toString() + " " + s.getB().toString() + " " + s.getC().toString());
+        }
+        return sb.toString();
     }
 
     @Override

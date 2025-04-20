@@ -31,6 +31,24 @@ public class Point3D {
         this.z += dz;
     }
 
+    public void rotate(double angleX, double angleY) {
+        // Rotate around Y axis
+        double cosY = Math.cos(angleY);
+        double sinY = Math.sin(angleY);
+        double x1 = x * cosY + z * sinY;
+        double z1 = -x * sinY + z * cosY;
+
+        // Rotate around X axis
+        double cosX = Math.cos(angleX);
+        double sinX = Math.sin(angleX);
+        double y1 = y * cosX - z1 * sinX;
+        double z2 = y * sinX + z1 * cosX;
+
+        x = x1;
+        y = y1;
+        z = z2;
+    }
+
 
     public boolean equals(Point3D other) {
         return this.x == other.x && this.y == other.y && this.z == other.z;
@@ -52,4 +70,8 @@ public class Point3D {
         return Double.hashCode(x) ^ Double.hashCode(y) ^ Double.hashCode(z);
     }
 
+    @Override
+    public String toString() {
+        return "x: " + x  + " | " + "y: " + y  + " | " + "z: " + z  + " | ";
+    }
 }

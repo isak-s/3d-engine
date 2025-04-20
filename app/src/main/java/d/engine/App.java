@@ -30,6 +30,10 @@ public class App {
 
         Shape3D tetrahedron = new Shape3D(triangles);
 
+        // Stream.of(triangles).collect(Collectors.toSet()).stream().forEach((Triangle t) -> {
+        //     t.applyScalar(2);
+        // });
+
         Point3D center = tetrahedron.computeCentroid();
 
         double offsetX = -center.x;
@@ -37,9 +41,7 @@ public class App {
         double offsetZ = -center.z + 25; // also push it back
 
         Stream.of(triangles).collect(Collectors.toSet()).stream().forEach((Triangle t) -> {
-
-            t.applyScalar(2);
-
+            // t.applyScalar(2);
             t.translate(offsetX, offsetY, offsetZ);
         });
 

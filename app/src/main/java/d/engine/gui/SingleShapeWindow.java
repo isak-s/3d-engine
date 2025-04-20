@@ -2,6 +2,9 @@ package d.engine.gui;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import javax.swing.*;
 
 import d.engine.geomety.Shape3D;
@@ -11,6 +14,8 @@ import d.engine.util.Constants;
 public class SingleShapeWindow {
 
     private Shape3D shape;
+
+    private int lastX, lastY;
 
     public SingleShapeWindow(Shape3D shape) {
         this.shape = shape;
@@ -28,9 +33,33 @@ public class SingleShapeWindow {
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 setBackground(Color.black);
-                renderShape(g); // Custom method to render Shape3D
+                renderShape(g);
             }
         };
+
+
+        panel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                lastX = e.getX();
+                lastY = e.getY();
+            }
+        });
+
+        panel.addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                int dx = e.getX() - lastX;
+                int dy = e.getY() - lastY;
+
+                rotateShape(dx, dy); // Rotate based on mouse movement
+
+                lastX = e.getX();
+                lastY = e.getY();
+
+                panel.repaint();
+            }
+        });
 
         frame.add(panel);
 
@@ -57,8 +86,20 @@ public class SingleShapeWindow {
             }
         );
 
-        // TODO: Sorting shapes by proximity to viewer etc..
 
+    }
 
+    private void rotateShape(int dx, int dy) {
+
+        System.err.println(shape);
+
+        double angleY = Math.toRadians(dx); // rotate around Y axis
+        double angleX = Math.toRadians(dy); // rotate around X axis
+
+        Stream.of(shape.sides).collect(Collectors.toSet()).stream().forEach((Triangle t) -> {
+            t.getA().rotate(angleX, angleY);
+            t.getB().rotate(angleX, angleY);
+            t.getC().rotate(angleX, angleY);
+        });
     }
 }
