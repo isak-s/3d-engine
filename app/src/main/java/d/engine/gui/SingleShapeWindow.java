@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 
 import javax.swing.*;
 
+import d.engine.geomety.Point3D;
 import d.engine.geomety.Shape3D;
 import d.engine.geomety.Triangle;
 import d.engine.util.Constants;
@@ -89,17 +90,36 @@ public class SingleShapeWindow {
 
     }
 
-    private void rotateShape(int dx, int dy) {
+private void rotateShape(int dx, int dy) {
+    double angleY = Math.toRadians(dx);
+    double angleX = Math.toRadians(dy);
 
-        System.err.println(shape);
+    Point3D centroid = shape.computeCentroid();
 
-        double angleY = Math.toRadians(dx); // rotate around Y axis
-        double angleX = Math.toRadians(dy); // rotate around X axis
+    for (Triangle t : shape) {
+        for (Point3D p : new Point3D[]{t.getA(), t.getB(), t.getC()}) {
+            // Translate to origin
+            p.x -= centroid.x;
+            p.y -= centroid.y;
+            p.z -= centroid.z;
 
-        Stream.of(shape.sides).collect(Collectors.toSet()).stream().forEach((Triangle t) -> {
-            t.getA().rotate(angleX, angleY);
-            t.getB().rotate(angleX, angleY);
-            t.getC().rotate(angleX, angleY);
-        });
+            // Rotate around Y
+            double cosY = Math.cos(angleY);
+            double sinY = Math.sin(angleY);
+            double x1 = p.x * cosY + p.z * sinY;
+            double z1 = -p.x * sinY + p.z * cosY;
+
+            // Rotate around X
+            double cosX = Math.cos(angleX);
+            double sinX = Math.sin(angleX);
+            double y1 = p.y * cosX - z1 * sinX;
+            double z2 = p.y * sinX + z1 * cosX;
+
+            // Update
+            p.x = x1 + centroid.x;
+            p.y = y1 + centroid.y;
+            p.z = z2 + centroid.z;
+        }
     }
+}
 }
