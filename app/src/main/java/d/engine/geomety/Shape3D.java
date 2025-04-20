@@ -51,6 +51,38 @@ public class Shape3D implements Iterable<Triangle> {
         return new Point3D(sumX / count, sumY / count, sumZ / count);
     }
 
+    public void rotateAroundPoint(Point3D referencePoint, double angleX, double angleY) {
+        for (Triangle t : sides) {
+            for (Point3D p : new Point3D[]{t.getA(), t.getB(), t.getC()}) {
+                // Translate to origin
+                p.x -= referencePoint.x;
+                p.y -= referencePoint.y;
+                p.z -= referencePoint.z;
+
+                // Rotate around Y
+                double cosY = Math.cos(angleY);
+                double sinY = Math.sin(angleY);
+                double x1 = p.x * cosY + p.z * sinY;
+                double z1 = -p.x * sinY + p.z * cosY;
+
+                // Rotate around X
+                double cosX = Math.cos(angleX);
+                double sinX = Math.sin(angleX);
+                double y1 = p.y * cosX - z1 * sinX;
+                double z2 = p.y * sinX + z1 * cosX;
+
+                // Update
+                p.x = x1 + referencePoint.x;
+                p.y = y1 + referencePoint.y;
+                p.z = z2 + referencePoint.z;
+            }
+        }
+    }
+
+    public void rotateAroundCentroid(double angleX, double angleY) {
+        rotateAroundPoint(computeCentroid(), angleX, angleY);
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -59,6 +91,8 @@ public class Shape3D implements Iterable<Triangle> {
         }
         return sb.toString();
     }
+
+
 
     @Override
     public Iterator<Triangle> iterator() {
