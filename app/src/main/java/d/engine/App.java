@@ -30,21 +30,19 @@ public class App {
 
         Shape3D tetrahedron = new Shape3D(triangles);
 
-        // Stream.of(triangles).collect(Collectors.toSet()).stream().forEach((Triangle t) -> {
-        //     t.applyScalar(2);
-        // });
+        tetrahedron.applyScalar(10);
 
-        Point3D center = tetrahedron.computeCentroid();
+        Point3D centroid = tetrahedron.computeCentroid();
 
-        double offsetX = -center.x; // - Constants.SCREEN_WIDTH / 2
-        double offsetY = -center.y; // - Constants.SCREEN_HEIGHT / 2
-        double offsetZ = -center.z + 25; // also push it back
+        // Point3D destination = new Point3D(Constants.SCREEN_WIDTH / 2, Constants.SCREEN_HEIGHT / 2, - centroid.z + 25);
 
-        Stream.of(triangles).collect(Collectors.toSet()).stream().forEach((Triangle t) -> {
-            t.translate(offsetX, offsetY, offsetZ);
-        });
+        // tetrahedron.moveCentroidTo(destination);
 
         new SingleShapeWindow(tetrahedron);
+
+        System.out.println("Unique vertices: " + tetrahedron.vertices.size());
+        System.err.println(tetrahedron);
+
 
 
     }

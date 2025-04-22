@@ -50,20 +50,28 @@ public class Point3D {
     }
 
 
-    public boolean equals(Point3D other) {
-        return this.x == other.x && this.y == other.y && this.z == other.z;
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Point3D other = (Point3D) obj;
+        return Double.compare(x, other.x) == 0 &&
+               Double.compare(y, other.y) == 0 &&
+               Double.compare(z, other.z) == 0;
     }
 
     public Point projectOntoScreenPlane() {
         double zClamped = this.z < Constants.EPSILON ? Constants.EPSILON : this.z;
 
+        // Project relative to screen center
         double xProjected = (this.x * Constants.distanceFromObserverToScreen) / zClamped;
         double yProjected = (this.y * Constants.distanceFromObserverToScreen) / zClamped;
 
-        int screenX = (int) ((xProjected + 1) * Constants.SCREEN_WIDTH / 2);
-        int screenY = (int) ((1 - yProjected) * Constants.SCREEN_HEIGHT / 2);
+        // Shift to screen center
+        double screenX = Constants.SCREEN_WIDTH / 2 + xProjected;
+        double screenY = Constants.SCREEN_HEIGHT / 2 - yProjected;
 
-        return new Point(screenX, screenY);
+        return new Point((int) screenX, (int) screenY);
     }
 
     public int hashCode() {
@@ -72,6 +80,6 @@ public class Point3D {
 
     @Override
     public String toString() {
-        return "x: " + x  + " | " + "y: " + y  + " | " + "z: " + z  + " | ";
+        return "x: " + x  + " | " + "y: " + y  + " | " + "z: " + z  + " | \n";
     }
 }

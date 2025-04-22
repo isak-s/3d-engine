@@ -29,19 +29,6 @@ public class Triangle {
         return C;
     }
 
-    public void applyScalar(double scalar) {
-        A.applyScalar(scalar);
-        B.applyScalar(scalar);
-        C.applyScalar(scalar);
-    }
-
-    public void translate(double dx, double dy, double dz) {
-        A.translate(dx, dy, dz);
-        B.translate(dx, dy, dz);
-        C.translate(dx, dy, dz);
-    }
-
-
     private boolean isValidTriangle(Point3D A, Point3D B, Point3D C) {
 
         PositionVector3D AB = B.subtract(A);  // Postition vector from a to b

@@ -81,6 +81,8 @@ public class SingleShapeWindow {
             Point p2 = t.getB().projectOntoScreenPlane();
             Point p3 = t.getC().projectOntoScreenPlane();
 
+            System.err.println(p1.x + " " + p1.y + " " + p2.x + " " + p2.y);
+
             g2d.drawLine(p1.x, p1.y, p2.x, p2.y);
             g2d.drawLine(p2.x, p2.y, p3.x, p3.y);
             g2d.drawLine(p3.x, p3.y, p1.x, p1.y);
