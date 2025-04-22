@@ -30,13 +30,7 @@ public class App {
 
         Shape3D tetrahedron = new Shape3D(triangles);
 
-        tetrahedron.applyScalar(10);
-
-        Point3D centroid = tetrahedron.computeCentroid();
-
-        // Point3D destination = new Point3D(Constants.SCREEN_WIDTH / 2, Constants.SCREEN_HEIGHT / 2, - centroid.z + 25);
-
-        // tetrahedron.moveCentroidTo(destination);
+        tetrahedron.applyScalar(100);
 
         new SingleShapeWindow(tetrahedron);
 

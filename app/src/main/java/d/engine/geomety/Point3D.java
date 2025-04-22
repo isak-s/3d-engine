@@ -31,6 +31,10 @@ public class Point3D {
         this.z += dz;
     }
 
+    public Point3D add(Point3D other) {
+        return new Point3D(x + other.x, y + other.y, z + other.z);
+    }
+
     public void rotate(double angleX, double angleY) {
         // Rotate around Y axis
         double cosY = Math.cos(angleY);

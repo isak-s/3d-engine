@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 import javax.swing.*;
 
 import d.engine.geomety.Point3D;
+import d.engine.geomety.PositionVector3D;
 import d.engine.geomety.Shape3D;
 import d.engine.geomety.Triangle;
 import d.engine.util.Constants;
@@ -75,11 +76,13 @@ public class SingleShapeWindow {
 
         g2d.setColor(Color.white);
 
+        PositionVector3D pos = shape.getPosition();
+
         shape.forEach((Triangle t) -> {
 
-            Point p1 = t.getA().projectOntoScreenPlane();
-            Point p2 = t.getB().projectOntoScreenPlane();
-            Point p3 = t.getC().projectOntoScreenPlane();
+            Point p1 = t.getA().add(pos).projectOntoScreenPlane();
+            Point p2 = t.getB().add(pos).projectOntoScreenPlane();
+            Point p3 = t.getC().add(pos).projectOntoScreenPlane();
 
             System.err.println(p1.x + " " + p1.y + " " + p2.x + " " + p2.y);
 

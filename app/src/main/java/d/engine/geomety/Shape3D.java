@@ -31,6 +31,18 @@ public class Shape3D implements Iterable<Triangle> {
         vertices = Stream.of(sides)
             .flatMap(s -> Stream.of(s.getA(), s.getB(), s.getC()))
             .collect(Collectors.toSet());
+
+        Point3D centroid = computeCentroid();
+
+        positionVec = new PositionVector3D(-centroid.x, -centroid.y, 25 - centroid.z);
+    }
+
+    public void setPosition(PositionVector3D p) {
+        positionVec = p;
+    }
+
+    public PositionVector3D getPosition() {
+        return positionVec;
     }
 
     private boolean isValidShape() {
