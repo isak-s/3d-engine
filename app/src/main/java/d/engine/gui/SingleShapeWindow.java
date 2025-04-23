@@ -9,18 +9,22 @@ import javax.swing.*;
 
 import d.engine.geomety.Point3D;
 import d.engine.geomety.PositionVector3D;
+import d.engine.geomety.ScreenPlane;
 import d.engine.geomety.Shape3D;
 import d.engine.geomety.Triangle;
 import d.engine.util.Constants;
 
 public class SingleShapeWindow {
 
+    private ScreenPlane screenPlane;
+
     private Shape3D shape;
 
     private int lastX, lastY;
 
-    public SingleShapeWindow(Shape3D shape) {
+    public SingleShapeWindow(Shape3D shape, ScreenPlane screenPlane) {
         this.shape = shape;
+        this.screenPlane = screenPlane;
         javax.swing.SwingUtilities.invokeLater(this::createWindow);
     }
     private void createWindow() {
@@ -80,16 +84,20 @@ public class SingleShapeWindow {
 
         shape.forEach((Triangle t) -> {
 
-            Point p1 = t.getA().add(pos).projectOntoScreenPlane();
-            Point p2 = t.getB().add(pos).projectOntoScreenPlane();
-            Point p3 = t.getC().add(pos).projectOntoScreenPlane();
+            ScreenPlane.ScreenCoordinate p1 = screenPlane.projectPointRayCasted(t.getA().add(pos));
+            ScreenPlane.ScreenCoordinate p2 = screenPlane.projectPointRayCasted(t.getB().add(pos));
+            ScreenPlane.ScreenCoordinate p3 = screenPlane.projectPointRayCasted(t.getC().add(pos));
+
+            if (p1 == null || p2 == null || p3 == null) {
+                return; // Skip this triangle
+            }
 
             System.err.println("Original:" + t.getA() + " " + t.getB() + " " + t.getC());
-            System.err.println("projected:" + p1.x + " " + p1.y + " " + p2.y);
+            System.err.println("projected:" + p1.getX() + " " + p1.getY());
 
-            g2d.drawLine(p1.x, p1.y, p2.x, p2.y);
-            g2d.drawLine(p2.x, p2.y, p3.x, p3.y);
-            g2d.drawLine(p3.x, p3.y, p1.x, p1.y);
+            g2d.drawLine(p1.getX(), p1.getY(), p2.getX(), p2.getY());
+            g2d.drawLine(p2.getX(), p2.getY(), p3.getX(), p3.getY());
+            g2d.drawLine(p3.getX(), p3.getY(), p1.getX(), p1.getY());
             }
         );
 

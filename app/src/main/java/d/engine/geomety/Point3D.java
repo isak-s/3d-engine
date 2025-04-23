@@ -1,9 +1,5 @@
 package d.engine.geomety;
 
-import d.engine.util.Constants;
-
-import java.awt.Point;
-
 public class Point3D {
     public double x, y, z;
 
@@ -62,20 +58,6 @@ public class Point3D {
         return Double.compare(x, other.x) == 0 &&
                Double.compare(y, other.y) == 0 &&
                Double.compare(z, other.z) == 0;
-    }
-
-    public Point projectOntoScreenPlane() {
-        double zClamped = this.z < Constants.EPSILON ? Constants.EPSILON : this.z;
-
-        // Project relative to screen center
-        double xProjected = (this.x * Constants.distanceFromObserverToScreen) / zClamped;
-        double yProjected = (this.y * Constants.distanceFromObserverToScreen) / zClamped;
-
-        // Shift to screen center
-        double screenX = Constants.SCREEN_WIDTH / 2 + xProjected;
-        double screenY = Constants.SCREEN_HEIGHT / 2 - yProjected;
-
-        return new Point((int) screenX, (int) screenY);
     }
 
     public int hashCode() {

@@ -33,4 +33,9 @@ public class PositionVector3D extends Point3D {
         return new PositionVector3D(x / scalar, y / scalar, z / scalar);
     }
 
+    @Override
+    public PositionVector3D add(Point3D other) {
+        return new PositionVector3D(x + other.x, y + other.y, z + other.z);
+    }
+
 }

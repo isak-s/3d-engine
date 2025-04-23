@@ -12,8 +12,7 @@ public class ScreenPlane extends Plane {
         eyePos = new PositionVector3D(origin.x, origin.y, origin.z - Constants.focalLength);
     }
 
-    @Override
-    public PositionVector3D projectPoint(PositionVector3D point) {
+    public ScreenCoordinate projectPointRayCasted(Point3D point) {
 
     // Step 1: Construct ray from eye to point
     PositionVector3D rayDir = point.subtract(eyePos).normalized(); // direction of ray
@@ -24,25 +23,43 @@ public class ScreenPlane extends Plane {
     // => ((eye + t * rayDir) - origin) ⋅ normal = 0
     // => (eye - origin + t * rayDir) ⋅ normal = 0
     // Solve for t
+
+    PositionVector3D eyeToOrigin = eyePos.subtract(origin);
+    double numerator = -eyeToOrigin.dotProduct(normal);
+    double denominator = rayDir.dotProduct(normal);
+
+    // Avoid division by zero — ray is parallel to plane
+    if (Math.abs(denominator) < 1e-6) {
+        return null;
+    }
+
+    double t = numerator / denominator;
+
+    //Step 3: Calculate intersection point
+    PositionVector3D eyeToPoint = new PositionVector3D(rayDir.x, rayDir.y, rayDir.z);
+    eyeToPoint.applyScalar(t);
+    PositionVector3D intersection = eyePos.add(rayDir);
+
+    return new ScreenCoordinate(intersection);
     }
 
 
-    private class screenCoordinate {
+    public class ScreenCoordinate {
 
-        private double x; // integer instead?
-        private double y;
+        private int x; // integer instead?
+        private int y;
 
-        public screenCoordinate(PositionVector3D point) {
+        private ScreenCoordinate(PositionVector3D point) {
             PositionVector3D rel = point.subtract(origin);
 
-            this.x = rel.x;
-            this.y = rel.y;
+            this.x = Constants.SCREEN_WIDTH/2 + (int) Math.round(rel.dotProduct(u));
+            this.y = Constants.SCREEN_HEIGHT/2 - (int) Math.round(rel.dotProduct(v));  // y is inverted
         }
 
-        public double getX() {
+        public int getX() {
             return x;
         }
-        public double getY() {
+        public int getY() {
             return y;
         }
     }
