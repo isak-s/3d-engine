@@ -1,6 +1,7 @@
 package d.engine.geomety;
 
 import java.util.Set;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -8,14 +9,13 @@ import java.util.stream.Stream;
 
 public class Shape3D implements Iterable<Triangle> {
 
+    private final Triangle[] originalFaces;  // never modified
+
     public Triangle[] faces;
 
     public Set<Point3D> vertices;
 
     public PositionVector3D positionVec;
-
-    PositionVector3D screenPlaneX = new PositionVector3D(1, 0, 0);
-    PositionVector3D screenPlaneY = new PositionVector3D(0, 1, 0);
 
     public Shape3D(Triangle[] faces) {
 
@@ -23,20 +23,24 @@ public class Shape3D implements Iterable<Triangle> {
             throw new IllegalArgumentException("Not enough faces");
         }
 
+        this.originalFaces = deepCloneTriangles(faces);
+        this.faces = deepCloneTriangles(originalFaces); // working copy
+        updateVertices();
+
         if (!isValidShape()) {
             throw new IllegalArgumentException("Not a valid shape");
         }
-        this.faces = faces;
-
-        vertices = Stream.of(faces)
-            .flatMap(s -> Stream.of(s.getA(), s.getB(), s.getC()))
-            .collect(Collectors.toSet());
 
         Point3D centroid = computeCentroid();
 
         vertices.forEach(p -> p.translate(-centroid.x, -centroid.y, -centroid.z));
 
         positionVec = new PositionVector3D(centroid.x, centroid.y, centroid.z);
+    }
+
+    public void resetTransformations() {
+        this.faces = deepCloneTriangles(originalFaces);
+        updateVertices();
     }
 
     public void setPosition(PositionVector3D p) {
@@ -124,6 +128,22 @@ public class Shape3D implements Iterable<Triangle> {
         double dz = target.z - current.z;
 
         vertices.forEach(p -> p.translate(dx, dy, dz));
+    }
+
+    private Triangle[] deepCloneTriangles(Triangle[] source) {
+        return Arrays.stream(source).map(t ->
+            new Triangle(
+                new Point3D(t.getA().x, t.getA().y, t.getA().z),
+                new Point3D(t.getB().x, t.getB().y, t.getB().z),
+                new Point3D(t.getC().x, t.getC().y, t.getC().z)
+            )
+        ).toArray(Triangle[]::new);
+    }
+
+    private void updateVertices() {
+        this.vertices = Stream.of(faces)
+            .flatMap(t -> Stream.of(t.getA(), t.getB(), t.getC()))
+            .collect(Collectors.toSet());
     }
 
     @Override

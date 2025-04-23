@@ -28,7 +28,7 @@ public class PositionVector3D extends Point3D {
     }
 
     public PositionVector3D normalized() {
-        double scalar = Math.sqrt(x*x + y*y + z*z);
+        double scalar = magnitude();
 
         return new PositionVector3D(x / scalar, y / scalar, z / scalar);
     }
@@ -36,6 +36,10 @@ public class PositionVector3D extends Point3D {
     @Override
     public PositionVector3D add(Point3D other) {
         return new PositionVector3D(x + other.x, y + other.y, z + other.z);
+    }
+
+    public double magnitude() {
+        return Math.sqrt(x*x + y*y + z*z);
     }
 
 }

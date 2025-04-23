@@ -10,6 +10,9 @@ public class ScreenPlane extends Plane {
         super(origin, normal);
 
         eyePos = new PositionVector3D(origin.x, origin.y, origin.z - Constants.focalLength);
+
+        this.u = new PositionVector3D(1, 0, 0);
+        this.v = new PositionVector3D(0, 1, 0);
     }
 
     public ScreenCoordinate projectPointRayCasted(Point3D point) {
@@ -38,7 +41,9 @@ public class ScreenPlane extends Plane {
     //Step 3: Calculate intersection point
     PositionVector3D eyeToPoint = new PositionVector3D(rayDir.x, rayDir.y, rayDir.z);
     eyeToPoint.applyScalar(t);
-    PositionVector3D intersection = eyePos.add(rayDir);
+    PositionVector3D intersection = eyePos.add(eyeToPoint);
+
+    System.out.println("Distance to point: " + point.subtract(eyePos).magnitude());
 
     return new ScreenCoordinate(intersection);
     }
@@ -46,7 +51,7 @@ public class ScreenPlane extends Plane {
 
     public class ScreenCoordinate {
 
-        private int x; // integer instead?
+        private int x;
         private int y;
 
         private ScreenCoordinate(PositionVector3D point) {
