@@ -7,10 +7,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import d.engine.geomety.Point3D;
+import d.engine.geomety.PositionVector3D;
 import d.engine.geomety.Shape3D;
 import d.engine.geomety.Triangle;
 import d.engine.gui.SingleShapeWindow;
 import d.engine.util.Constants;
+import d.engine.geomety.Plane;
 
 public class App {
 
@@ -30,7 +32,12 @@ public class App {
 
         Shape3D tetrahedron = new Shape3D(triangles);
 
-        tetrahedron.applyScalar(100);
+        tetrahedron.applyScalar(20);
+
+        tetrahedron.setPosition(new PositionVector3D(0, 0, 25));
+
+        Plane screenPlane = new Plane(new PositionVector3D(0, 0, -25),
+                                      new PositionVector3D(0, 0, 1));
 
         new SingleShapeWindow(tetrahedron);
 

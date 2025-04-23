@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 
 public class Shape3D implements Iterable<Triangle> {
 
-    public Triangle[] sides;
+    public Triangle[] faces;
 
     public Set<Point3D> vertices;
 
@@ -17,24 +17,26 @@ public class Shape3D implements Iterable<Triangle> {
     PositionVector3D screenPlaneX = new PositionVector3D(1, 0, 0);
     PositionVector3D screenPlaneY = new PositionVector3D(0, 1, 0);
 
-    public Shape3D(Triangle[] sides) {
+    public Shape3D(Triangle[] faces) {
 
-        if (sides.length < 3) {
+        if (faces.length < 3) {
             throw new IllegalArgumentException("Not enough faces");
         }
 
         if (!isValidShape()) {
             throw new IllegalArgumentException("Not a valid shape");
         }
-        this.sides = sides;
+        this.faces = faces;
 
-        vertices = Stream.of(sides)
+        vertices = Stream.of(faces)
             .flatMap(s -> Stream.of(s.getA(), s.getB(), s.getC()))
             .collect(Collectors.toSet());
 
         Point3D centroid = computeCentroid();
 
-        positionVec = new PositionVector3D(-centroid.x, -centroid.y, 25 - centroid.z);
+        vertices.forEach(p -> p.translate(-centroid.x, -centroid.y, -centroid.z));
+
+        positionVec = new PositionVector3D(centroid.x, centroid.y, centroid.z);
     }
 
     public void setPosition(PositionVector3D p) {
@@ -57,7 +59,7 @@ public class Shape3D implements Iterable<Triangle> {
     }
 
     public int getNbrFaces() {
-        return sides.length;
+        return faces.length;
     }
 
     public void applyScalar(double scalar) {
@@ -66,46 +68,52 @@ public class Shape3D implements Iterable<Triangle> {
 
     public Point3D computeCentroid() {
         double sumX = 0, sumY = 0, sumZ = 0;
-        int count = 0;
+        int count = vertices.size();
 
         for (Point3D t : vertices) {
             sumX += t.x;
             sumY += t.y;
             sumZ += t.z;
-            count += 1;
         }
 
         return new Point3D(sumX / count, sumY / count, sumZ / count);
     }
 
-    public void rotateAroundPoint(Point3D referencePoint, double angleX, double angleY) {
+    public void rotateAroundPoint(Point3D referencePoint, double angleX, double angleY, double angleZ) {
         for (Point3D p : vertices) {
             // Translate to origin
-            p.x -= referencePoint.x;
-            p.y -= referencePoint.y;
-            p.z -= referencePoint.z;
+            double translatedX = p.x - referencePoint.x;
+            double translatedY = p.y - referencePoint.y;
+            double translatedZ = p.z - referencePoint.z;
 
-            // Rotate around Y
+            // Rotate around Z axis
+            double cosZ = Math.cos(angleZ);
+            double sinZ = Math.sin(angleZ);
+            double xZ = translatedX * cosZ - translatedY * sinZ;
+            double yZ = translatedX * sinZ + translatedY * cosZ;
+            double zZ = translatedZ;
+
+            // Rotate around Y axis
             double cosY = Math.cos(angleY);
             double sinY = Math.sin(angleY);
-            double x1 = p.x * cosY + p.z * sinY;
-            double z1 = -p.x * sinY + p.z * cosY;
+            double xY = xZ * cosY + zZ * sinY;
+            double zY = -xZ * sinY + zZ * cosY;
 
-            // Rotate around X
+            // Rotate around X axis
             double cosX = Math.cos(angleX);
             double sinX = Math.sin(angleX);
-            double y1 = p.y * cosX - z1 * sinX;
-            double z2 = p.y * sinX + z1 * cosX;
+            double yX = yZ * cosX - zY * sinX;
+            double zX = yZ * sinX + zY * cosX;
 
-            // Update
-            p.x = x1 + referencePoint.x;
-            p.y = y1 + referencePoint.y;
-            p.z = z2 + referencePoint.z;
+            // Translate back
+            p.x = xY + referencePoint.x;
+            p.y = yX + referencePoint.y;
+            p.z = zX + referencePoint.z;
         }
     }
 
-    public void rotateAroundCentroid(double angleX, double angleY) {
-        rotateAroundPoint(computeCentroid(), angleX, angleY);
+    public void rotateAroundCentroid(double angleX, double angleY, double angleZ) {
+        rotateAroundPoint(computeCentroid(), angleX, angleY, angleZ);
     }
 
     public void moveCentroidTo(Point3D target) {
@@ -138,7 +146,7 @@ public class Shape3D implements Iterable<Triangle> {
 
         @Override
         public boolean hasNext() {
-            return index < sides.length;
+            return index < faces.length;
         }
 
         @Override
@@ -146,7 +154,7 @@ public class Shape3D implements Iterable<Triangle> {
             if (!hasNext()) {
                 throw new NoSuchElementException();
             }
-            return sides[index++];
+            return faces[index++];
         }
     }
 

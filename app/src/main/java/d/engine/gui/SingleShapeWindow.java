@@ -84,7 +84,8 @@ public class SingleShapeWindow {
             Point p2 = t.getB().add(pos).projectOntoScreenPlane();
             Point p3 = t.getC().add(pos).projectOntoScreenPlane();
 
-            System.err.println(p1.x + " " + p1.y + " " + p2.x + " " + p2.y);
+            System.err.println("Original:" + t.getA() + " " + t.getB() + " " + t.getC());
+            System.err.println("projected:" + p1.x + " " + p1.y + " " + p2.y);
 
             g2d.drawLine(p1.x, p1.y, p2.x, p2.y);
             g2d.drawLine(p2.x, p2.y, p3.x, p3.y);
@@ -99,6 +100,6 @@ private void rotateShape(int dx, int dy) {
     double angleY = Math.toRadians(dx);
     double angleX = Math.toRadians(dy);
 
-    shape.rotateAroundCentroid(angleX, angleY);
+    shape.rotateAroundCentroid(angleX, angleY, 0);
 }
 }
