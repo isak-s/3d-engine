@@ -43,10 +43,35 @@ public class ScreenPlane extends Plane {
     eyeToPoint.applyScalar(t);
     PositionVector3D intersection = eyePos.add(eyeToPoint);
 
-    System.out.println("Distance to point: " + point.subtract(eyePos).magnitude());
+    // System.out.println("Distance to point: " + point.subtract(eyePos).magnitude());
 
     return new ScreenCoordinate(intersection);
     }
+
+    public void rotateAroundPoint(Point3D pivot, double angleX, double angleY, double angleZ) {
+        // Translate everything to origin relative to pivot
+        PositionVector3D relEye = eyePos.subtract(pivot);
+        PositionVector3D relOrigin = origin.subtract(pivot);
+
+        // Apply rotations
+        PositionVector3D newRelEye = relEye.rotated(pivot, angleX, angleY, angleZ);
+        PositionVector3D newRelOrigin = relOrigin.rotated(pivot, angleX, angleY, angleZ);
+        PositionVector3D newNormal = normal.rotated(pivot, angleX, angleY, angleZ);
+        PositionVector3D newU = u.rotated(pivot, angleX, angleY, angleZ);
+        PositionVector3D newV = v.rotated(pivot, angleX, angleY, angleZ);
+
+        // Translate back
+        this.eyePos = pivot.add(newRelEye);
+        this.origin = pivot.add(newRelOrigin);
+        this.normal = newNormal.normalized();
+        this.u = newU.normalized();
+        this.v = newV.normalized();
+    }
+
+    public ScreenCoordinate ScreenCoordinateFromPositionVector(PositionVector3D p) {
+        return new ScreenCoordinate(p);
+    }
+
 
 
     public class ScreenCoordinate {
@@ -55,7 +80,7 @@ public class ScreenPlane extends Plane {
         private int y;
 
         private ScreenCoordinate(PositionVector3D point) {
-            PositionVector3D rel = point.subtract(origin);
+            PositionVector3D rel = point; // point.subtract(origin);
 
             this.x = Constants.SCREEN_WIDTH/2 + (int) Math.round(rel.dotProduct(u));
             this.y = Constants.SCREEN_HEIGHT/2 - (int) Math.round(rel.dotProduct(v));  // y is inverted

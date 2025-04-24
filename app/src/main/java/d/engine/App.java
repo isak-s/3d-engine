@@ -28,13 +28,13 @@ public class App {
 
         Shape3D tetrahedron = new Shape3D(triangles);
 
-        tetrahedron.applyScalar(100);
+        tetrahedron.applyScalar(1);
         System.out.println("Vertex A after scaling: " + A);
 
 
-        tetrahedron.setPosition(new PositionVector3D(0, 0, 1));
+        tetrahedron.setPosition(new PositionVector3D(0, 0, 0));
 
-        ScreenPlane screenPlane = new ScreenPlane(new PositionVector3D(0, 0, 0),
+        ScreenPlane screenPlane = new ScreenPlane(new PositionVector3D(0, 0, -0.5),
                                                   new PositionVector3D(0, 0, 1));
 
         new SingleShapeWindow(tetrahedron, screenPlane);

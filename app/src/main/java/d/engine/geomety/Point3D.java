@@ -30,24 +30,48 @@ public class Point3D {
     public Point3D add(Point3D other) {
         return new Point3D(x + other.x, y + other.y, z + other.z);
     }
+    public PositionVector3D add(PositionVector3D other) {
+        return new PositionVector3D(x + other.x, y + other.y, z + other.z);
+    }
 
-    public void rotate(double angleX, double angleY) {
+    public void rotate(Point3D pivot, double angleX, double angleY, double angleZ) {
+
+        this.translate(-pivot.x, -pivot.y, -pivot.z);
+
+        // Rotate around Z axis
+        double cosZ = Math.cos(angleZ);
+        double sinZ = Math.sin(angleZ);
+        double xZ = x * cosZ - y * sinZ;
+        double yZ = x * sinZ + y * cosZ;
+        double zZ = z;
+
         // Rotate around Y axis
         double cosY = Math.cos(angleY);
         double sinY = Math.sin(angleY);
-        double x1 = x * cosY + z * sinY;
-        double z1 = -x * sinY + z * cosY;
+        double xY = xZ * cosY + zZ * sinY;
+        double zY = -xZ * sinY + zZ * cosY;
+        double yY = yZ;
 
         // Rotate around X axis
         double cosX = Math.cos(angleX);
         double sinX = Math.sin(angleX);
-        double y1 = y * cosX - z1 * sinX;
-        double z2 = y * sinX + z1 * cosX;
+        double yX = yY * cosX - zY * sinX;
+        double zX = yY * sinX + zY * cosX;
 
-        x = x1;
-        y = y1;
-        z = z2;
+        x = xY;
+        y = yX;
+        z = zX;
+
+        this.translate(pivot.x, pivot.y, pivot.z);
     }
+
+    public Point3D rotated(Point3D pivot, double angleX, double angleY, double angleZ) {
+        Point3D copy = new Point3D(x, y, z);
+        copy.rotate(pivot, angleX, angleY, angleZ);
+        return copy;
+    }
+
+
 
 
     @Override

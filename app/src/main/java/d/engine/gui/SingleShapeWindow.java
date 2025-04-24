@@ -6,6 +6,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 
+import d.engine.geomety.Point3D;
 import d.engine.geomety.PositionVector3D;
 import d.engine.geomety.ScreenPlane;
 import d.engine.geomety.Shape3D;
@@ -54,7 +55,13 @@ public class SingleShapeWindow {
             public void mouseDragged(MouseEvent e) {
                 int dx = e.getX() - lastX;
                 int dy = e.getY() - lastY;
-                rotateShape(dx, dy);
+
+
+                // rotateShape(dx, dy);
+
+
+                rotatePlane(dx, dy);
+
                 lastX = e.getX();
                 lastY = e.getY();
                 panel.repaint();
@@ -86,13 +93,13 @@ public class SingleShapeWindow {
         });
 
         // Distance slider
-        int initialZ = (int)(shape.getPosition().z * 100);
-        initialZ = Math.max(10, Math.min(300, initialZ));
+        int initialZ = (int)(shape.getPosition().z);
+        initialZ = Math.max(1, Math.min(300, initialZ));
 
-        JSlider distanceSlider = new JSlider(10, 300, initialZ);
+        JSlider distanceSlider = new JSlider(1, 300, initialZ);
         distanceSlider.setBorder(BorderFactory.createTitledBorder("Distance to Object (x100)"));
         distanceSlider.addChangeListener(e -> {
-            double z = distanceSlider.getValue() / 100.0;
+            double z = distanceSlider.getValue();
             shape.setPosition(new PositionVector3D(0, 0, z));
 
             TitledBorder border = (TitledBorder) distanceSlider.getBorder();
@@ -103,10 +110,10 @@ public class SingleShapeWindow {
         });
 
         // Scalar slider
-        JSlider scaleSlider = new JSlider(10, 5000, 100);
-        scaleSlider.setBorder(BorderFactory.createTitledBorder("Scale (%)"));
+        JSlider scaleSlider = new JSlider(1, 5000, 1);
+        scaleSlider.setBorder(BorderFactory.createTitledBorder("Scale"));
         scaleSlider.addChangeListener(e -> {
-            double scale = scaleSlider.getValue() / 100.0;
+            double scale = scaleSlider.getValue();
             shape.resetTransformations();
             shape.applyScalar(scale);
 
@@ -124,17 +131,23 @@ public class SingleShapeWindow {
     }
 
     private void renderShape(Graphics g) {
+
+        System.err.println(shape.computeCentroid());
+
         Graphics2D g2d = (Graphics2D) g;
         g2d.setColor(Color.white);
 
         PositionVector3D pos = shape.getPosition();
 
         shape.forEach((Triangle t) -> {
-            ScreenPlane.ScreenCoordinate p1 = screenPlane.projectPointRayCasted(t.getA().add(pos));
-            ScreenPlane.ScreenCoordinate p2 = screenPlane.projectPointRayCasted(t.getB().add(pos));
-            ScreenPlane.ScreenCoordinate p3 = screenPlane.projectPointRayCasted(t.getC().add(pos));
+            ScreenPlane.ScreenCoordinate p1 = screenPlane.ScreenCoordinateFromPositionVector(screenPlane.projectPoint(t.getA().add(pos)));
+            ScreenPlane.ScreenCoordinate p2 = screenPlane.ScreenCoordinateFromPositionVector(screenPlane.projectPoint(t.getB().add(pos)));
+            ScreenPlane.ScreenCoordinate p3 = screenPlane.ScreenCoordinateFromPositionVector(screenPlane.projectPoint(t.getC().add(pos)));
 
-            if (p1 == null || p2 == null || p3 == null) return;
+            if (p1 == null || p2 == null || p3 == null) {
+                System.err.println("null");
+                return;
+            }
 
             g2d.drawLine(p1.getX(), p1.getY(), p2.getX(), p2.getY());
             g2d.drawLine(p2.getX(), p2.getY(), p3.getX(), p3.getY());
@@ -147,4 +160,12 @@ public class SingleShapeWindow {
         double angleX = Math.toRadians(dy);
         shape.rotateAroundCentroid(angleX, angleY, 0);
     }
+
+    private void rotatePlane(int dx, int dy) {
+        double angleY = Math.toRadians(dx); // horizontal drag -> Y-axis rotation
+        double angleX = Math.toRadians(dy); // vertical drag -> X-axis rotation
+
+        screenPlane.rotateAroundPoint(new Point3D(0, 0, 0), angleX, angleY, 0); // You'll need to implement this
+    }
+
 }

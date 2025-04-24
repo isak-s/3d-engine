@@ -42,4 +42,10 @@ public class PositionVector3D extends Point3D {
         return Math.sqrt(x*x + y*y + z*z);
     }
 
+    public PositionVector3D rotated(Point3D pivot, double angleX, double angleY, double angleZ) {
+        PositionVector3D copy = new PositionVector3D(x, y, z);
+        copy.rotate(pivot, angleX, angleY, angleZ);
+        return copy;
+    }
+
 }

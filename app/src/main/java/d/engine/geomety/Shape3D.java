@@ -23,8 +23,7 @@ public class Shape3D implements Iterable<Triangle> {
             throw new IllegalArgumentException("Not enough faces");
         }
 
-        this.originalFaces = deepCloneTriangles(faces);
-        this.faces = deepCloneTriangles(originalFaces); // working copy
+        this.faces = deepCloneTriangles(faces); // working copy
         updateVertices();
 
         if (!isValidShape()) {
@@ -34,6 +33,8 @@ public class Shape3D implements Iterable<Triangle> {
         Point3D centroid = computeCentroid();
 
         vertices.forEach(p -> p.translate(-centroid.x, -centroid.y, -centroid.z));
+
+        this.originalFaces = deepCloneTriangles(this.faces);
 
         positionVec = new PositionVector3D(centroid.x, centroid.y, centroid.z);
     }
@@ -85,34 +86,7 @@ public class Shape3D implements Iterable<Triangle> {
 
     public void rotateAroundPoint(Point3D referencePoint, double angleX, double angleY, double angleZ) {
         for (Point3D p : vertices) {
-            // Translate to origin
-            double translatedX = p.x - referencePoint.x;
-            double translatedY = p.y - referencePoint.y;
-            double translatedZ = p.z - referencePoint.z;
-
-            // Rotate around Z axis
-            double cosZ = Math.cos(angleZ);
-            double sinZ = Math.sin(angleZ);
-            double xZ = translatedX * cosZ - translatedY * sinZ;
-            double yZ = translatedX * sinZ + translatedY * cosZ;
-            double zZ = translatedZ;
-
-            // Rotate around Y axis
-            double cosY = Math.cos(angleY);
-            double sinY = Math.sin(angleY);
-            double xY = xZ * cosY + zZ * sinY;
-            double zY = -xZ * sinY + zZ * cosY;
-
-            // Rotate around X axis
-            double cosX = Math.cos(angleX);
-            double sinX = Math.sin(angleX);
-            double yX = yZ * cosX - zY * sinX;
-            double zX = yZ * sinX + zY * cosX;
-
-            // Translate back
-            p.x = xY + referencePoint.x;
-            p.y = yX + referencePoint.y;
-            p.z = zX + referencePoint.z;
+            p = p.rotated(referencePoint, angleX, angleY, angleZ);
         }
     }
 
