@@ -4,6 +4,8 @@
 package d.engine;
 
 import d.engine.bodies.Cube;
+import d.engine.bodies.D20;
+import d.engine.bodies.Hexagon;
 import d.engine.bodies.Tetrahedron;
 import d.engine.geomety.PositionVector3D;
 import d.engine.geomety.ScreenPlane;
@@ -14,7 +16,7 @@ public class App {
 
     public static void main(String[] args) {
 
-        Shape3D tetrahedron = new Cube();
+        Shape3D tetrahedron = new D20();
 
         tetrahedron.applyScalar(200);
 
