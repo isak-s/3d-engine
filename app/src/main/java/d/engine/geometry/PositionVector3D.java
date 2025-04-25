@@ -1,4 +1,4 @@
-package d.engine.geomety;
+package d.engine.geometry;
 
 // ortsvektor på svenska
 public class PositionVector3D extends Point3D {

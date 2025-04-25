@@ -1,6 +1,6 @@
 package d.engine.util;
 
-import d.engine.geomety.PositionVector3D;
+import d.engine.geometry.PositionVector3D;
 
 public final class Constants {
 

@@ -6,11 +6,11 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 
-import d.engine.geomety.Point3D;
-import d.engine.geomety.PositionVector3D;
-import d.engine.geomety.ScreenPlane;
-import d.engine.geomety.Shape3D;
-import d.engine.geomety.Triangle;
+import d.engine.geometry.Point3D;
+import d.engine.geometry.PositionVector3D;
+import d.engine.geometry.ScreenPlane;
+import d.engine.geometry.Shape3D;
+import d.engine.geometry.Triangle;
 import d.engine.util.Constants;
 
 

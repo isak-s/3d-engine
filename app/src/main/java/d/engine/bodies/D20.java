@@ -1,8 +1,8 @@
 package d.engine.bodies;
 
-import d.engine.geomety.Point3D;
-import d.engine.geomety.Shape3D;
-import d.engine.geomety.Triangle;
+import d.engine.geometry.Point3D;
+import d.engine.geometry.Shape3D;
+import d.engine.geometry.Triangle;
 
 public class D20 extends Shape3D {
     public D20() {
