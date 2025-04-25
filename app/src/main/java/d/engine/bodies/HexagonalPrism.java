@@ -4,8 +4,8 @@ import d.engine.geomety.Point3D;
 import d.engine.geomety.Shape3D;
 import d.engine.geomety.Triangle;
 
-public class Hexagon extends Shape3D {
-    public Hexagon() {
+public class HexagonalPrism extends Shape3D {
+    public HexagonalPrism() {
         super(createHexagonalPrism());
     }
 

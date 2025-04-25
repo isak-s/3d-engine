@@ -3,13 +3,10 @@
  */
 package d.engine;
 
-import d.engine.bodies.Cube;
 import d.engine.bodies.D20;
-import d.engine.bodies.Hexagon;
-import d.engine.bodies.Tetrahedron;
-import d.engine.geomety.PositionVector3D;
-import d.engine.geomety.ScreenPlane;
-import d.engine.geomety.Shape3D;
+import d.engine.geometry.PositionVector3D;
+import d.engine.geometry.ScreenPlane;
+import d.engine.geometry.Shape3D;
 import d.engine.gui.SingleShapeWindow;
 
 public class App {
@@ -18,12 +15,12 @@ public class App {
 
         Shape3D tetrahedron = new D20();
 
+        ScreenPlane screenPlane = new ScreenPlane(new PositionVector3D(0, 0, -300),
+                                                  new PositionVector3D(0, 0, 1));
+
         tetrahedron.applyScalar(200);
 
         tetrahedron.setPosition(new PositionVector3D(0, 0, 0));
-
-        ScreenPlane screenPlane = new ScreenPlane(new PositionVector3D(0, 0, -300),
-                                                  new PositionVector3D(0, 0, 1));
 
         new SingleShapeWindow(tetrahedron, screenPlane);
 
