@@ -23,8 +23,11 @@ public class Shape3D implements Iterable<Triangle> {
             throw new IllegalArgumentException("Not enough faces");
         }
 
-        this.faces = deepCloneTriangles(faces); // working copy
-        updateVertices();
+        this.faces = deepCloneTriangles(faces); // temporary
+        updateVertices(); // creates vertexSet from above
+
+        // Now rebuild faces so they share the actual vertexSet points
+        this.faces = deepCloneTrianglesSharingVertices(this.faces, this.vertices);
 
         if (!isValidShape()) {
             throw new IllegalArgumentException("Not a valid shape");
@@ -86,7 +89,7 @@ public class Shape3D implements Iterable<Triangle> {
 
     public void rotateAroundPoint(Point3D referencePoint, double angleX, double angleY, double angleZ) {
         for (Point3D p : vertices) {
-            p = p.rotated(referencePoint, angleX, angleY, angleZ);
+            p.rotate(referencePoint, angleX, angleY, angleZ);
         }
     }
 
@@ -94,17 +97,7 @@ public class Shape3D implements Iterable<Triangle> {
         rotateAroundPoint(computeCentroid(), angleX, angleY, angleZ);
     }
 
-    public void moveCentroidTo(Point3D target) {
-        Point3D current = computeCentroid();
-
-        double dx = target.x - current.x;
-        double dy = target.y - current.y;
-        double dz = target.z - current.z;
-
-        vertices.forEach(p -> p.translate(dx, dy, dz));
-    }
-
-    private Triangle[] deepCloneTriangles(Triangle[] source) {
+    private static Triangle[] deepCloneTriangles(Triangle[] source) {
         return Arrays.stream(source).map(t ->
             new Triangle(
                 new Point3D(t.getA().x, t.getA().y, t.getA().z),
@@ -127,6 +120,23 @@ public class Shape3D implements Iterable<Triangle> {
             sb.append(s.toString());
         }
         return sb.toString();
+    }
+
+    private static Triangle[] deepCloneTrianglesSharingVertices(Triangle[] source, Set<Point3D> vertexSet) {
+        // Create a lookup map of coordinates to shared Point3D instances
+        return Arrays.stream(source).map(t -> {
+            Point3D a = findMatchingPoint(t.getA(), vertexSet);
+            Point3D b = findMatchingPoint(t.getB(), vertexSet);
+            Point3D c = findMatchingPoint(t.getC(), vertexSet);
+            return new Triangle(a, b, c);
+        }).toArray(Triangle[]::new);
+    }
+
+    private static Point3D findMatchingPoint(Point3D target, Set<Point3D> pool) {
+        return pool.stream()
+            .filter(p -> p.equals(target)) // override equals() to check coordinate equality
+            .findFirst()
+            .orElseThrow(() -> new RuntimeException("Point not found in pool"));
     }
 
     @Override

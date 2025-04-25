@@ -72,6 +72,10 @@ public class ScreenPlane extends Plane {
         return new ScreenCoordinate(p);
     }
 
+    public PositionVector3D getPos() {
+        return origin;
+    }
+
 
 
     public class ScreenCoordinate {
@@ -91,6 +95,10 @@ public class ScreenPlane extends Plane {
         }
         public int getY() {
             return y;
+        }
+        @Override
+        public String toString() {
+            return "x: " + x + "y: " + y ;
         }
     }
 }

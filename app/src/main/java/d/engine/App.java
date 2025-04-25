@@ -13,10 +13,11 @@ import d.engine.gui.SingleShapeWindow;
 public class App {
 
     public static void main(String[] args) {
-        Point3D A = new Point3D(0, 0, 0);
-        Point3D B = new Point3D(1, 0, 0);
-        Point3D C = new Point3D(0.5, Math.sqrt(3) / 2, 0);
-        Point3D D = new Point3D(0.5, Math.sqrt(3) / 6, Math.sqrt(6) / 3);
+
+        Point3D A = new Point3D(-0.5109, -0.1868, -0.1903);
+        Point3D B = new Point3D( 0.4766, -0.3599, -0.2167);
+        Point3D C = new Point3D(-0.0930,  0.5763, -0.1996);
+        Point3D D = new Point3D( 0.0502,  0.0827,  0.6136);
 
         // Define the faces (triangles)
         Triangle triangle1 = new Triangle(A, B, C);  // Face ABC
@@ -28,13 +29,13 @@ public class App {
 
         Shape3D tetrahedron = new Shape3D(triangles);
 
-        tetrahedron.applyScalar(1);
+        tetrahedron.applyScalar(200);
         System.out.println("Vertex A after scaling: " + A);
 
 
         tetrahedron.setPosition(new PositionVector3D(0, 0, 0));
 
-        ScreenPlane screenPlane = new ScreenPlane(new PositionVector3D(0, 0, -0.5),
+        ScreenPlane screenPlane = new ScreenPlane(new PositionVector3D(0, 0, -300),
                                                   new PositionVector3D(0, 0, 1));
 
         new SingleShapeWindow(tetrahedron, screenPlane);

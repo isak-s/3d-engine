@@ -57,10 +57,10 @@ public class SingleShapeWindow {
                 int dy = e.getY() - lastY;
 
 
-                // rotateShape(dx, dy);
+                rotateShape(dx, dy);
 
 
-                rotatePlane(dx, dy);
+                // rotatePlane(dx, dy);
 
                 lastX = e.getX();
                 lastY = e.getY();
@@ -132,12 +132,16 @@ public class SingleShapeWindow {
 
     private void renderShape(Graphics g) {
 
-        System.err.println(shape.computeCentroid());
+        System.err.println("centroid: " + shape.computeCentroid());
 
         Graphics2D g2d = (Graphics2D) g;
         g2d.setColor(Color.white);
 
         PositionVector3D pos = shape.getPosition();
+
+        int[] count = new int[1];
+
+        System.err.println("Screen position: " + screenPlane.getPos());
 
         shape.forEach((Triangle t) -> {
             ScreenPlane.ScreenCoordinate p1 = screenPlane.ScreenCoordinateFromPositionVector(screenPlane.projectPoint(t.getA().add(pos)));
@@ -149,9 +153,20 @@ public class SingleShapeWindow {
                 return;
             }
 
+            System.err.println("triangle" + count[0]);
+            count[0]++;
+            System.err.println("Original A: " + t.getA().add(pos));
+            System.err.println("Projected p1: " + p1);
+
+
+            // randomize color
+
+            g2d.setColor(t.color);
+
             g2d.drawLine(p1.getX(), p1.getY(), p2.getX(), p2.getY());
             g2d.drawLine(p2.getX(), p2.getY(), p3.getX(), p3.getY());
             g2d.drawLine(p3.getX(), p3.getY(), p1.getX(), p1.getY());
+
         });
     }
 
