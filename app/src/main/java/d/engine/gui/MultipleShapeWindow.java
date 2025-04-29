@@ -1,7 +1,9 @@
 package d.engine.gui;
 
+
 import java.awt.*;
 import java.awt.event.*;
+import java.util.stream.Stream;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -13,16 +15,15 @@ import d.engine.geometry.Shape3D;
 import d.engine.geometry.Triangle;
 import d.engine.util.Constants;
 
-
-public class SingleShapeWindow {
+public class MultipleShapeWindow {
 
     private ScreenPlane screenPlane;
-    private Shape3D shape;
+    private Shape3D[] shapes;
     private int lastX, lastY;
     private JPanel panel;
 
-    public SingleShapeWindow(Shape3D shape, ScreenPlane screenPlane) {
-        this.shape = shape;
+    public MultipleShapeWindow(Shape3D[] shapes, ScreenPlane screenPlane) {
+        this.shapes = shapes;
         this.screenPlane = screenPlane;
         javax.swing.SwingUtilities.invokeLater(this::createWindow);
     }
@@ -38,7 +39,7 @@ public class SingleShapeWindow {
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 setBackground(Color.black);
-                renderShape(g);
+                renderShapes(g);
             }
         };
 
@@ -57,7 +58,7 @@ public class SingleShapeWindow {
                 int dy = e.getY() - lastY;
 
 
-                rotateShape(dx, dy);
+                rotateShapes(dx, dy);
 
 
                 // rotatePlane(dx, dy);
@@ -80,27 +81,29 @@ public class SingleShapeWindow {
 
         // Focal length slider
         JSlider focalSlider = new JSlider(1, 100, (int)(Constants.focalLength * 100));
-        focalSlider.setBorder(BorderFactory.createTitledBorder("Focal Length (x100)"));
+        focalSlider.setBorder(BorderFactory.createTitledBorder("Focal Length in centimeters"));
         focalSlider.addChangeListener(e -> {
             Constants.focalLength = focalSlider.getValue() / 1000.0;
             screenPlane = new ScreenPlane(new PositionVector3D(0, 0, 0), new PositionVector3D(0, 0, 1));
 
             TitledBorder border = (TitledBorder) focalSlider.getBorder();
-            border.setTitle("Focal Length: " + Constants.focalLength);
+            border.setTitle("Focal Length in centimeters: " + Constants.focalLength);
             focalSlider.repaint();
 
             panel.repaint();
         });
 
         // Distance slider
-        int initialZ = (int)(shape.getPosition().z);
+        int initialZ = (int)(shapes[0].getPosition().z);
         initialZ = Math.max(1, Math.min(300, initialZ));
 
         JSlider distanceSlider = new JSlider(1, 300, initialZ);
-        distanceSlider.setBorder(BorderFactory.createTitledBorder("Distance to Object (x100)"));
+        distanceSlider.setBorder(BorderFactory.createTitledBorder("Distance to Object"));
         distanceSlider.addChangeListener(e -> {
             double z = distanceSlider.getValue();
-            shape.setPosition(new PositionVector3D(0, 0, z));
+
+            // TODO: Different distances for all shapes
+            Stream.of(shapes).forEach(shape -> shape.setPosition(new PositionVector3D(0, 0, z)));
 
             TitledBorder border = (TitledBorder) distanceSlider.getBorder();
             border.setTitle("Distance to object: " + z);
@@ -114,8 +117,11 @@ public class SingleShapeWindow {
         scaleSlider.setBorder(BorderFactory.createTitledBorder("Scale"));
         scaleSlider.addChangeListener(e -> {
             double scale = scaleSlider.getValue();
-            shape.resetTransformations();
-            shape.applyScalar(scale);
+
+            Stream.of(shapes).forEach(shape -> {
+                shape.resetTransformations();
+                shape.applyScalar(scale);
+            });
 
             TitledBorder border = (TitledBorder) scaleSlider.getBorder();
             border.setTitle("Scale: " + scale);
@@ -130,7 +136,12 @@ public class SingleShapeWindow {
         return sliderPanel;
     }
 
-    private void renderShape(Graphics g) {
+    private void renderShapes(Graphics g) {
+        Stream.of(shapes).forEach(s -> renderShape(g, s));
+
+    }
+
+    private void renderShape(Graphics g, Shape3D shape) {
 
         System.err.println("centroid: " + shape.computeCentroid());
 
@@ -170,7 +181,13 @@ public class SingleShapeWindow {
         });
     }
 
-    private void rotateShape(int dx, int dy) {
+    private void rotateShapes(int dx, int dy) {
+        double angleY = Math.toRadians(dx);
+        double angleX = Math.toRadians(dy);
+        Stream.of(shapes).forEach(s -> s.rotateAroundCentroid(angleX, angleY, 0));
+    }
+
+    private void rotateShape(int dx, int dy, Shape3D shape) {
         double angleY = Math.toRadians(dx);
         double angleX = Math.toRadians(dy);
         shape.rotateAroundCentroid(angleX, angleY, 0);

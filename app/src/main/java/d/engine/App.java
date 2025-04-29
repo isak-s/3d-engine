@@ -3,47 +3,60 @@
  */
 package d.engine;
 
-import d.engine.geomety.Point3D;
-import d.engine.geomety.PositionVector3D;
-import d.engine.geomety.ScreenPlane;
-import d.engine.geomety.Shape3D;
-import d.engine.geomety.Triangle;
+import d.engine.bodies.Cube;
+import d.engine.bodies.D20;
+import d.engine.bodies.HexagonalPrism;
+import d.engine.bodies.Tetrahedron;
+import d.engine.geometry.PositionVector3D;
+import d.engine.geometry.ScreenPlane;
+import d.engine.geometry.Shape3D;
+import d.engine.gui.MultipleShapeWindow;
 import d.engine.gui.SingleShapeWindow;
 
 public class App {
 
     public static void main(String[] args) {
+        MultipleShapes();
+    }
 
-        Point3D A = new Point3D(-0.5109, -0.1868, -0.1903);
-        Point3D B = new Point3D( 0.4766, -0.3599, -0.2167);
-        Point3D C = new Point3D(-0.0930,  0.5763, -0.1996);
-        Point3D D = new Point3D( 0.0502,  0.0827,  0.6136);
-
-        // Define the faces (triangles)
-        Triangle triangle1 = new Triangle(A, B, C);  // Face ABC
-        Triangle triangle2 = new Triangle(A, B, D);  // Face ABD
-        Triangle triangle3 = new Triangle(B, C, D);  // Face BCD
-        Triangle triangle4 = new Triangle(A, C, D);  // Face ACD
-
-        Triangle[] triangles = new Triangle[] {triangle1, triangle2, triangle3, triangle4};
-
-        Shape3D tetrahedron = new Shape3D(triangles);
-
-        tetrahedron.applyScalar(200);
-        System.out.println("Vertex A after scaling: " + A);
-
-
-        tetrahedron.setPosition(new PositionVector3D(0, 0, 0));
+    private static void SingleShape() {
+        Shape3D tetrahedron = new D20();
 
         ScreenPlane screenPlane = new ScreenPlane(new PositionVector3D(0, 0, -300),
                                                   new PositionVector3D(0, 0, 1));
+
+        tetrahedron.applyScalar(200);
+
+        tetrahedron.setPosition(new PositionVector3D(0, 0, 0));
 
         new SingleShapeWindow(tetrahedron, screenPlane);
 
         System.out.println("Unique vertices: " + tetrahedron.vertices.size());
         System.err.println(tetrahedron);
+    }
 
+    private static void MultipleShapes() {
 
+        Shape3D d20 = new D20();
+        Shape3D tetrahedron = new Tetrahedron();
+        Shape3D cube = new Cube();
+        Shape3D hexagonalPrism = new HexagonalPrism();
 
+        Shape3D[] shapes = {d20, tetrahedron, cube, hexagonalPrism};
+
+        ScreenPlane screenPlane = new ScreenPlane(new PositionVector3D(0, 0, -300),
+                                                  new PositionVector3D(0, 0, 1));
+
+        tetrahedron.applyScalar(100);
+        cube.applyScalar(75);
+        hexagonalPrism.applyScalar(50);
+        d20.applyScalar(50);
+
+        tetrahedron.setPosition(new PositionVector3D(-100, 100, 0));
+        cube.setPosition(new PositionVector3D(100, 100, 0));
+        hexagonalPrism.setPosition(new PositionVector3D(-100, -100, 0));
+        d20.setPosition(new PositionVector3D(100, -100, 0));
+
+        new MultipleShapeWindow(shapes, screenPlane);
     }
 }

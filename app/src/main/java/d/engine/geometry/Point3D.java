@@ -1,4 +1,4 @@
-package d.engine.geomety;
+package d.engine.geometry;
 
 public class Point3D {
     public double x, y, z;

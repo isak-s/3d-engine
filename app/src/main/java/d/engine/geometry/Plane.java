@@ -1,4 +1,4 @@
-package d.engine.geomety;
+package d.engine.geometry;
 
 
 public class Plane {
