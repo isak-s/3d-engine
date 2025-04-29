@@ -82,12 +82,13 @@ public class MultipleShapeWindow {
 
         // Focal length slider
         JSlider focalSlider = new JSlider(1, 100, (int)(Constants.focalLength * 100));
-        focalSlider.setBorder(BorderFactory.createTitledBorder("Focal Length in centimeters"));
+        focalSlider.setBorder(BorderFactory.createTitledBorder("Focal Length in meters " + Constants.focalLength));
         focalSlider.addChangeListener(e -> {
-            Constants.focalLength = focalSlider.getValue() / 100.0;
+            double focal = focalSlider.getValue() / 100.0;
+            screenPlane.setFocalLength(focal);
 
             TitledBorder border = (TitledBorder) focalSlider.getBorder();
-            border.setTitle("Focal Length in centimeters: " + Constants.focalLength);
+            border.setTitle("Focal Length in meters: " + focal);
             focalSlider.repaint();
 
             panel.repaint();
@@ -101,7 +102,6 @@ public class MultipleShapeWindow {
         distanceSlider.addChangeListener(e -> {
             double z = distanceSlider.getValue();
 
-            // TODO: Different distances for all shapes
             screenPlane.setOrigin(new PositionVector3D(0, 0, z));
 
             TitledBorder border = (TitledBorder) distanceSlider.getBorder();
@@ -142,7 +142,7 @@ public class MultipleShapeWindow {
 
         PositionVector3D pos = shape.getPosition();
 
-        System.err.println("Screen position: " + screenPlane.getPos());
+        // System.err.println("Screen position: " + screenPlane.getPos());
         ArrayList<Triangle> triangles = new ArrayList<>();
         shape.forEach(triangles::add); // collect triangles
 
@@ -155,6 +155,11 @@ public class MultipleShapeWindow {
             ScreenPlane.ScreenCoordinate p1 = screenPlane.projectPointRayCasted(t.getA().add(pos));
             ScreenPlane.ScreenCoordinate p2 = screenPlane.projectPointRayCasted(t.getB().add(pos));
             ScreenPlane.ScreenCoordinate p3 = screenPlane.projectPointRayCasted(t.getC().add(pos));
+
+            // Plan projektion
+            // ScreenPlane.ScreenCoordinate p1 = screenPlane.ScreenCoordinateFromPositionVector(screenPlane.projectPoint(t.getA().add(pos)));
+            // ScreenPlane.ScreenCoordinate p2 = screenPlane.ScreenCoordinateFromPositionVector(screenPlane.projectPoint(t.getB().add(pos)));
+            // ScreenPlane.ScreenCoordinate p3 = screenPlane.ScreenCoordinateFromPositionVector(screenPlane.projectPoint(t.getC().add(pos)));
 
             if (p1 == null || p2 == null || p3 == null) {
                 System.err.println("null");

@@ -17,6 +17,11 @@ public class ScreenPlane extends Plane {
 
     public ScreenCoordinate projectPointRayCasted(Point3D point) {
 
+    // If the point is behind the observer
+    if (point.z - origin.z < Constants.EPSILON) {
+        return null;
+    }
+
     // Step 1: Construct ray from eye to point
     PositionVector3D rayDir = point.subtract(eyePos).normalized(); // direction of ray
 
@@ -74,6 +79,10 @@ public class ScreenPlane extends Plane {
 
     public PositionVector3D getPos() {
         return origin;
+    }
+
+    public void setFocalLength(double focalLength) {
+        this.eyePos = new PositionVector3D(origin.x, origin.y, origin.z - focalLength);
     }
 
 

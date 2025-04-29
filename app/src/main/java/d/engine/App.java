@@ -44,18 +44,18 @@ public class App {
 
         Shape3D[] shapes = {d20, tetrahedron, cube, hexagonalPrism};
 
-        ScreenPlane screenPlane = new ScreenPlane(new PositionVector3D(0, 0, -300),
+        ScreenPlane screenPlane = new ScreenPlane(new PositionVector3D(0, 0, -30),
                                                   new PositionVector3D(0, 0, 1));
 
-        tetrahedron.applyScalar(100);
-        cube.applyScalar(75);
-        hexagonalPrism.applyScalar(50);
-        d20.applyScalar(50);
+        tetrahedron.applyScalar(10.0);
+        cube.applyScalar(7.5);
+        hexagonalPrism.applyScalar(5.0);
+        d20.applyScalar(5.0);
 
-        tetrahedron.setPosition(new PositionVector3D(-100, 100, 0));
-        cube.setPosition(new PositionVector3D(100, 100, 0));
-        hexagonalPrism.setPosition(new PositionVector3D(-100, -100, 0));
-        d20.setPosition(new PositionVector3D(100, -100, 0));
+        tetrahedron.setPosition(new PositionVector3D(-10, 10, 0));
+        cube.setPosition(new PositionVector3D(10, 10, 0));
+        hexagonalPrism.setPosition(new PositionVector3D(-10, -10, 0));
+        d20.setPosition(new PositionVector3D(10, -10, 0));
 
         new MultipleShapeWindow(shapes, screenPlane);
     }
