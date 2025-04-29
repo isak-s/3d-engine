@@ -35,6 +35,10 @@ public class Triangle {
         return C;
     }
 
+    public double averageZ() {
+        return ( A.z + B.z + C.z ) / 3;
+    }
+
     private boolean isValidTriangle(Point3D A, Point3D B, Point3D C) {
 
         PositionVector3D AB = B.subtract(A);  // Postition vector from a to b

@@ -3,6 +3,7 @@ package d.engine.gui;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 import java.util.stream.Stream;
 
 import javax.swing.*;
@@ -143,18 +144,21 @@ public class MultipleShapeWindow {
 
     private void renderShape(Graphics g, Shape3D shape) {
 
-        System.err.println("centroid: " + shape.computeCentroid());
-
         Graphics2D g2d = (Graphics2D) g;
         g2d.setColor(Color.white);
 
         PositionVector3D pos = shape.getPosition();
 
-        int[] count = new int[1];
-
         System.err.println("Screen position: " + screenPlane.getPos());
+        ArrayList<Triangle> triangles = new ArrayList<>();
+        shape.forEach(triangles::add); // collect triangles
 
-        shape.forEach((Triangle t) -> {
+        // Sort by average Z depth (back to front)
+        triangles.sort((t1, t2) -> {
+            return Double.compare(t2.averageZ(), t1.averageZ()); // painter's algorithm (farther first)
+        });
+
+        triangles.forEach((Triangle t) -> {
             ScreenPlane.ScreenCoordinate p1 = screenPlane.ScreenCoordinateFromPositionVector(screenPlane.projectPoint(t.getA().add(pos)));
             ScreenPlane.ScreenCoordinate p2 = screenPlane.ScreenCoordinateFromPositionVector(screenPlane.projectPoint(t.getB().add(pos)));
             ScreenPlane.ScreenCoordinate p3 = screenPlane.ScreenCoordinateFromPositionVector(screenPlane.projectPoint(t.getC().add(pos)));
@@ -163,20 +167,18 @@ public class MultipleShapeWindow {
                 System.err.println("null");
                 return;
             }
-
-            System.err.println("triangle" + count[0]);
-            count[0]++;
-            System.err.println("Original A: " + t.getA().add(pos));
-            System.err.println("Projected p1: " + p1);
-
-
             // randomize color
 
             g2d.setColor(t.color);
 
-            g2d.drawLine(p1.getX(), p1.getY(), p2.getX(), p2.getY());
-            g2d.drawLine(p2.getX(), p2.getY(), p3.getX(), p3.getY());
-            g2d.drawLine(p3.getX(), p3.getY(), p1.getX(), p1.getY());
+            // g2d.drawLine(p1.getX(), p1.getY(), p2.getX(), p2.getY());
+            // g2d.drawLine(p2.getX(), p2.getY(), p3.getX(), p3.getY());
+            // g2d.drawLine(p3.getX(), p3.getY(), p1.getX(), p1.getY());
+
+            int[] xs = {p1.getX(), p2.getX(), p3.getX()};
+            int[] ys = {p1.getY(), p2.getY(), p3.getY()};
+
+            g2d.fillPolygon(xs, ys, 3);
 
         });
     }
