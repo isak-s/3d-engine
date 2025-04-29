@@ -9,6 +9,8 @@ public class Triangle {
 
     public Color color;
 
+    public boolean isTransparent = false;
+
     public Triangle(Point3D A, Point3D B, Point3D C) {
 
         // Add some margin for double miscalculations

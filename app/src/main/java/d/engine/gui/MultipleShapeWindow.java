@@ -114,26 +114,21 @@ public class MultipleShapeWindow {
         });
 
         // Scalar slider
-        JSlider scaleSlider = new JSlider(1, 5000, 1);
-        scaleSlider.setBorder(BorderFactory.createTitledBorder("Scale"));
-        scaleSlider.addChangeListener(e -> {
-            double scale = scaleSlider.getValue();
-
-            Stream.of(shapes).forEach(shape -> {
-                shape.resetTransformations();
-                shape.applyScalar(scale);
-            });
-
-            TitledBorder border = (TitledBorder) scaleSlider.getBorder();
-            border.setTitle("Scale: " + scale);
-            scaleSlider.repaint();
-
+        JButton x2Button = new JButton("1.1x scalar");
+        x2Button.addActionListener(e -> {
+            Stream.of(shapes).forEach(s -> s.applyScalar(1.1));
+            panel.repaint();
+        });
+        JButton x05Button = new JButton("0.9x scalar");
+        x05Button.addActionListener(e -> {
+            Stream.of(shapes).forEach(s -> s.applyScalar(0.9));
             panel.repaint();
         });
 
         sliderPanel.add(focalSlider);
         sliderPanel.add(distanceSlider);
-        sliderPanel.add(scaleSlider);
+        sliderPanel.add(x05Button);
+        sliderPanel.add(x2Button);
         return sliderPanel;
     }
 
@@ -167,19 +162,22 @@ public class MultipleShapeWindow {
                 System.err.println("null");
                 return;
             }
-            // randomize color
 
             g2d.setColor(t.color);
 
-            // g2d.drawLine(p1.getX(), p1.getY(), p2.getX(), p2.getY());
-            // g2d.drawLine(p2.getX(), p2.getY(), p3.getX(), p3.getY());
-            // g2d.drawLine(p3.getX(), p3.getY(), p1.getX(), p1.getY());
+            if (t.isTransparent) {
+                g2d.drawLine(p1.getX(), p1.getY(), p2.getX(), p2.getY());
+                g2d.drawLine(p2.getX(), p2.getY(), p3.getX(), p3.getY());
+                g2d.drawLine(p3.getX(), p3.getY(), p1.getX(), p1.getY());
+            }
+            else {
 
-            int[] xs = {p1.getX(), p2.getX(), p3.getX()};
-            int[] ys = {p1.getY(), p2.getY(), p3.getY()};
+                int[] xs = {p1.getX(), p2.getX(), p3.getX()};
+                int[] ys = {p1.getY(), p2.getY(), p3.getY()};
 
-            g2d.fillPolygon(xs, ys, 3);
+                g2d.fillPolygon(xs, ys, 3);
 
+            }
         });
     }
 
