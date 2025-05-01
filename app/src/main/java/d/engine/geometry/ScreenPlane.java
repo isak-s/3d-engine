@@ -4,15 +4,17 @@ import d.engine.util.Constants;
 
 public class ScreenPlane extends Plane {
 
-    PositionVector3D eyePos;
+    public PositionVector3D eyePos;
+
+    private double focalLength = Constants.focalLength;
 
     public ScreenPlane(PositionVector3D origin, PositionVector3D normal) {
         super(origin, normal);
 
         eyePos = new PositionVector3D(origin.x, origin.y, origin.z - Constants.focalLength);
 
-        this.u = new PositionVector3D(1, 0, 0);
-        this.v = new PositionVector3D(0, 1, 0);
+        this.u = Constants.SCREEN_PLANE_X;
+        this.v = Constants.SCREEN_PLANE_Y;
     }
 
     public ScreenCoordinate projectPointRayCasted(Point3D point) {
@@ -73,19 +75,20 @@ public class ScreenPlane extends Plane {
         this.v = newV.normalized();
     }
 
-    public ScreenCoordinate ScreenCoordinateFromPositionVector(PositionVector3D p) {
-        return new ScreenCoordinate(p);
-    }
-
-    public PositionVector3D getPos() {
-        return origin;
-    }
-
     public void setFocalLength(double focalLength) {
+        this.focalLength = focalLength;
         this.eyePos = new PositionVector3D(origin.x, origin.y, origin.z - focalLength);
     }
 
+    @Override
+    public void setOrigin(PositionVector3D p) {
+        this.origin = new PositionVector3D(p.x, p.y, p.z);
+        this.eyePos = new PositionVector3D(p.x, p.y, p.z - focalLength);
+    }
 
+    public ScreenCoordinate screenCoordinate(PositionVector3D point) {
+        return new ScreenCoordinate(point);
+    }
 
     public class ScreenCoordinate {
 

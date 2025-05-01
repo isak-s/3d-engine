@@ -16,21 +16,28 @@ import d.engine.geometry.Shape3D;
 import d.engine.geometry.Triangle;
 import d.engine.util.Constants;
 
-public class MultipleShapeWindow {
+public class ShapeDemoWindow {
+
+    private String title;
 
     private ScreenPlane screenPlane;
     private Shape3D[] shapes;
     private int lastX, lastY;
     private JPanel panel;
 
-    public MultipleShapeWindow(Shape3D[] shapes, ScreenPlane screenPlane) {
+    private String[] projectionModes = {"Raycasted projection", "Plane projection"};
+
+    private String projectionMode = projectionModes[0];
+
+    public ShapeDemoWindow(Shape3D[] shapes, ScreenPlane screenPlane, String title) {
         this.shapes = shapes;
         this.screenPlane = screenPlane;
+        this.title = title;
         javax.swing.SwingUtilities.invokeLater(this::createWindow);
     }
 
     private void createWindow() {
-        JFrame frame = new JFrame("ShapeDemo");
+        JFrame frame = new JFrame(title);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
 
@@ -78,7 +85,7 @@ public class MultipleShapeWindow {
     }
 
     private JPanel createSliders() {
-        JPanel sliderPanel = new JPanel(new GridLayout(3, 1));
+        JPanel sliderPanel = new JPanel(new GridLayout(3, 2));
 
         // Focal length slider
         JSlider focalSlider = new JSlider(1, 100, (int)(Constants.focalLength * 100));
@@ -95,7 +102,7 @@ public class MultipleShapeWindow {
         });
 
         // Distance slider
-        int initialZ = (int)screenPlane.getPos().z;
+        int initialZ = (int)screenPlane.getOrigin().z;
 
         JSlider distanceSlider = new JSlider(-300, 300, initialZ);
         distanceSlider.setBorder(BorderFactory.createTitledBorder("Plane's Z-coordinate"));
@@ -111,7 +118,8 @@ public class MultipleShapeWindow {
             panel.repaint();
         });
 
-        // Scalar slider
+
+        // Scalar
         JButton x2Button = new JButton("1.1x scalar");
         x2Button.addActionListener(e -> {
             Stream.of(shapes).forEach(s -> s.applyScalar(1.1));
@@ -123,8 +131,23 @@ public class MultipleShapeWindow {
             panel.repaint();
         });
 
+        // Projection mode
+        ButtonGroup group = new ButtonGroup();
+
+        // Add a radio button for each element in the array
+        for (String option : projectionModes) {
+            JRadioButton radioButton = new JRadioButton(option);
+            radioButton.addActionListener(e -> {
+                projectionMode = option;
+                panel.repaint();
+            });
+            group.add(radioButton);
+            sliderPanel.add(radioButton);
+        }
+
         sliderPanel.add(focalSlider);
         sliderPanel.add(distanceSlider);
+
         sliderPanel.add(x05Button);
         sliderPanel.add(x2Button);
         return sliderPanel;
@@ -142,7 +165,9 @@ public class MultipleShapeWindow {
 
         PositionVector3D pos = shape.getPosition();
 
-        // System.err.println("Screen position: " + screenPlane.getPos());
+        System.err.println("Screen position: " + screenPlane.getOrigin());
+        System.err.println("Focal length: " + screenPlane.eyePos);
+
         ArrayList<Triangle> triangles = new ArrayList<>();
         shape.forEach(triangles::add); // collect triangles
 
@@ -152,17 +177,22 @@ public class MultipleShapeWindow {
         });
 
         triangles.forEach((Triangle t) -> {
-            ScreenPlane.ScreenCoordinate p1 = screenPlane.projectPointRayCasted(t.getA().add(pos));
-            ScreenPlane.ScreenCoordinate p2 = screenPlane.projectPointRayCasted(t.getB().add(pos));
-            ScreenPlane.ScreenCoordinate p3 = screenPlane.projectPointRayCasted(t.getC().add(pos));
+            ScreenPlane.ScreenCoordinate p1;
+            ScreenPlane.ScreenCoordinate p2;
+            ScreenPlane.ScreenCoordinate p3;
 
-            // Plan projektion
-            // ScreenPlane.ScreenCoordinate p1 = screenPlane.ScreenCoordinateFromPositionVector(screenPlane.projectPoint(t.getA().add(pos)));
-            // ScreenPlane.ScreenCoordinate p2 = screenPlane.ScreenCoordinateFromPositionVector(screenPlane.projectPoint(t.getB().add(pos)));
-            // ScreenPlane.ScreenCoordinate p3 = screenPlane.ScreenCoordinateFromPositionVector(screenPlane.projectPoint(t.getC().add(pos)));
+            if (projectionMode == "Raycasted projection") {
+                p1 = screenPlane.projectPointRayCasted(t.getA().add(pos));
+                p2 = screenPlane.projectPointRayCasted(t.getB().add(pos));
+                p3 = screenPlane.projectPointRayCasted(t.getC().add(pos));
+            } else {
+                p1 = screenPlane.screenCoordinate(screenPlane.projectPoint(t.getA().add(pos)));
+                p2 = screenPlane.screenCoordinate(screenPlane.projectPoint(t.getB().add(pos)));
+                p3 = screenPlane.screenCoordinate(screenPlane.projectPoint(t.getC().add(pos)));
+            }
 
             if (p1 == null || p2 == null || p3 == null) {
-                System.err.println("null");
+                // System.err.println("null");
                 return;
             }
 

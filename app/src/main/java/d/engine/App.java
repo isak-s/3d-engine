@@ -3,60 +3,10 @@
  */
 package d.engine;
 
-import d.engine.bodies.Cube;
-import d.engine.bodies.D20;
-import d.engine.bodies.HexagonalPrism;
-import d.engine.bodies.Tetrahedron;
-import d.engine.geometry.PositionVector3D;
-import d.engine.geometry.ScreenPlane;
-import d.engine.geometry.Shape3D;
-import d.engine.gui.MultipleShapeWindow;
-import d.engine.gui.SingleShapeWindow;
 
 public class App {
 
     public static void main(String[] args) {
-        MultipleShapes();
-    }
-
-    private static void SingleShape() {
-        Shape3D tetrahedron = new D20();
-
-        ScreenPlane screenPlane = new ScreenPlane(new PositionVector3D(0, 0, -300),
-                                                  new PositionVector3D(0, 0, 1));
-
-        tetrahedron.applyScalar(200);
-
-        tetrahedron.setPosition(new PositionVector3D(0, 0, 0));
-
-        new SingleShapeWindow(tetrahedron, screenPlane);
-
-        System.out.println("Unique vertices: " + tetrahedron.vertices.size());
-        System.err.println(tetrahedron);
-    }
-
-    private static void MultipleShapes() {
-
-        Shape3D d20 = new D20();
-        Shape3D tetrahedron = new Tetrahedron();
-        Shape3D cube = new Cube();
-        Shape3D hexagonalPrism = new HexagonalPrism();
-
-        Shape3D[] shapes = {d20, tetrahedron, cube, hexagonalPrism};
-
-        ScreenPlane screenPlane = new ScreenPlane(new PositionVector3D(0, 0, -30),
-                                                  new PositionVector3D(0, 0, 1));
-
-        tetrahedron.applyScalar(10.0);
-        cube.applyScalar(7.5);
-        hexagonalPrism.applyScalar(5.0);
-        d20.applyScalar(5.0);
-
-        tetrahedron.setPosition(new PositionVector3D(-10, 10, 0));
-        cube.setPosition(new PositionVector3D(10, 10, 0));
-        hexagonalPrism.setPosition(new PositionVector3D(-10, -10, 0));
-        d20.setPosition(new PositionVector3D(10, -10, 0));
-
-        new MultipleShapeWindow(shapes, screenPlane);
+        System.out.println("hello");
     }
 }
