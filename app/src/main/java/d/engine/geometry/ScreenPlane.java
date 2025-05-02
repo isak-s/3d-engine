@@ -16,7 +16,7 @@ public class ScreenPlane extends Plane {
     public ScreenPlane(PositionVector3D origin, PositionVector3D normal) {
         super(origin, normal);
 
-        eyePos = new PositionVector3D(origin.x, origin.y, origin.z - Constants.focalLength);
+        this.eyePos = origin.subtract(normal.normalized().multiply(focalLength));
 
         this.u = Constants.SCREEN_PLANE_X;
         this.v = Constants.SCREEN_PLANE_Y;
@@ -60,9 +60,7 @@ public class ScreenPlane extends Plane {
     double t =  numerator / denominator;
 
     //Step 3: Calculate intersection point
-    PositionVector3D eyeToPoint = new PositionVector3D(rayDir.x, rayDir.y, rayDir.z);
-    eyeToPoint.applyScalar(t);
-    PositionVector3D intersection = eyePos.add(eyeToPoint);
+    PositionVector3D intersection = eyePos.add(rayDir.multiply(t));
 
     System.out.println("Intersection: " + intersection);
     System.out.println("Distance from camera: " + intersection.magnitude());
@@ -92,14 +90,14 @@ public class ScreenPlane extends Plane {
 
     public void setFocalLength(double focalLength) {
         this.focalLength = focalLength;
-        this.eyePos = new PositionVector3D(origin.x, origin.y, origin.z - focalLength);
+        this.eyePos = origin.subtract(normal.normalized().multiply(focalLength));
         calculateScreenSize();
     }
 
     @Override
     public void setOrigin(PositionVector3D p) {
         this.origin = new PositionVector3D(p.x, p.y, p.z);
-        this.eyePos = new PositionVector3D(p.x, p.y, p.z - focalLength);
+        this.eyePos = origin.subtract(normal.normalized().multiply(focalLength));
     }
 
     public ScreenCoordinate screenCoordinate(PositionVector3D point) {

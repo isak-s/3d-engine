@@ -8,8 +8,8 @@ public final class Constants {
     private Constants() {}
 
     public static final double EPSILON = 1e-6;
-    public static final int SCREEN_WIDTH = 500;
-    public static final int SCREEN_HEIGHT = 500;
+    public static final int SCREEN_WIDTH = 16 *100;
+    public static final int SCREEN_HEIGHT = 9 * 100;
     public static final String ENGINE_VERSION = "1.0.0";
 
     public static final PositionVector3D SCREEN_PLANE_X = new PositionVector3D(1, 0, 0);
