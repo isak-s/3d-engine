@@ -8,6 +8,11 @@ public class ScreenPlane extends Plane {
 
     private double focalLength = Constants.focalLength;
 
+    private double screenWidthMeters;
+    private double screenHeightMeters;
+    private double fovYDegrees = 90.0; // vertical FOV
+    private double fovXDegrees = 90.0; // Horzontal FOV
+
     public ScreenPlane(PositionVector3D origin, PositionVector3D normal) {
         super(origin, normal);
 
@@ -15,12 +20,21 @@ public class ScreenPlane extends Plane {
 
         this.u = Constants.SCREEN_PLANE_X;
         this.v = Constants.SCREEN_PLANE_Y;
+
+        calculateScreenSize();
+
+    }
+
+    private void calculateScreenSize() {
+        double fovYRadians = Math.toRadians(fovYDegrees);
+        screenHeightMeters = 2 * focalLength * Math.tan(fovYRadians / 2);
+        screenWidthMeters = screenHeightMeters * Constants.SCREEN_WIDTH / Constants.SCREEN_HEIGHT;
     }
 
     public ScreenCoordinate projectPointRayCasted(Point3D point) {
 
     // If the point is behind the observer
-    if (point.z - origin.z < Constants.EPSILON) {
+    if (point.subtract(eyePos).dotProduct(normal) < Constants.EPSILON) {
         return null;
     }
 
@@ -39,20 +53,21 @@ public class ScreenPlane extends Plane {
     double denominator = rayDir.dotProduct(normal);
 
     // Avoid division by zero — ray is parallel to plane
-    if (Math.abs(denominator) < 1e-6) {
+    if (Math.abs(denominator) < Constants.EPSILON) {
         return null;
     }
 
-    double t = numerator / denominator;
+    double t =  numerator / denominator;
 
     //Step 3: Calculate intersection point
     PositionVector3D eyeToPoint = new PositionVector3D(rayDir.x, rayDir.y, rayDir.z);
     eyeToPoint.applyScalar(t);
     PositionVector3D intersection = eyePos.add(eyeToPoint);
 
-    // System.out.println("Distance to point: " + point.subtract(eyePos).magnitude());
+    System.out.println("Intersection: " + intersection);
+    System.out.println("Distance from camera: " + intersection.magnitude());
 
-    return new ScreenCoordinate(intersection);
+    return new ScreenCoordinate(intersection, true);
     }
 
     public void rotateAroundPoint(Point3D pivot, double angleX, double angleY, double angleZ) {
@@ -78,6 +93,7 @@ public class ScreenPlane extends Plane {
     public void setFocalLength(double focalLength) {
         this.focalLength = focalLength;
         this.eyePos = new PositionVector3D(origin.x, origin.y, origin.z - focalLength);
+        calculateScreenSize();
     }
 
     @Override
@@ -96,7 +112,7 @@ public class ScreenPlane extends Plane {
         private int y;
 
         private ScreenCoordinate(PositionVector3D point) {
-            PositionVector3D rel = point; // point.subtract(origin);
+            PositionVector3D rel = point.subtract(origin);
 
             this.x = Constants.SCREEN_WIDTH/2 + (int) Math.round(rel.dotProduct(u));
             this.y = Constants.SCREEN_HEIGHT/2 - (int) Math.round(rel.dotProduct(v));  // y is inverted
@@ -111,6 +127,25 @@ public class ScreenPlane extends Plane {
         @Override
         public String toString() {
             return "x: " + x + "y: " + y ;
+        }
+
+        private ScreenCoordinate(PositionVector3D point, Boolean fovBased) {
+            PositionVector3D rel = point.subtract(origin);
+
+            double xMeters = rel.dotProduct(u);  // projected X coordinate on plane
+            double yMeters = rel.dotProduct(v);  // projected Y coordinate on plane
+
+            // Convert meters to pixels
+            int xPixels = (int) Math.round(
+                Constants.SCREEN_WIDTH * (xMeters / screenWidthMeters + 0.5)
+            );
+
+            int yPixels = (int) Math.round(
+                Constants.SCREEN_HEIGHT * (0.5 - yMeters / screenHeightMeters)
+            );
+
+            this.x = xPixels;
+            this.y = yPixels;
         }
     }
 }

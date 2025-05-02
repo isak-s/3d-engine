@@ -1,8 +1,7 @@
 package d.engine;
 
-import java.lang.reflect.Array;
-
 import d.engine.bodies.D20;
+import d.engine.bodies.Tetrahedron;
 import d.engine.geometry.PositionVector3D;
 import d.engine.geometry.ScreenPlane;
 import d.engine.geometry.Shape3D;
@@ -12,22 +11,22 @@ public class SingleShapeDemo {
 
     public static void main(String[] args) {
 
-        Shape3D d20 = new D20();
+        Shape3D shape = new Tetrahedron();
 
-        d20.setTransparrent();
+        // shape.setTransparrent();
 
-        Shape3D[] shapes = {d20};
+        Shape3D[] shapes = {shape};
 
-        ScreenPlane screenPlane = new ScreenPlane(new PositionVector3D(0, 0, -300),
+        ScreenPlane screenPlane = new ScreenPlane(new PositionVector3D(0, 0, 0),
                                                   new PositionVector3D(0, 0, 1));
 
-        d20.applyScalar(20);
+        shape.applyScalar(100);
 
-        // d20.setPosition(new PositionVector3D(0, 0, -90));
+        shape.setPosition(new PositionVector3D(0, 0, 200));
 
         new ShapeDemoWindow(shapes, screenPlane, "Single shape demo");
 
-        System.out.println("Unique vertices: " + d20.vertices.size());
+        System.out.println("Unique vertices: " + shape.vertices.size());
 
     }
 }

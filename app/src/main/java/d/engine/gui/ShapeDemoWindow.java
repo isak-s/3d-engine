@@ -134,16 +134,23 @@ public class ShapeDemoWindow {
         // Projection mode
         ButtonGroup group = new ButtonGroup();
 
-        // Add a radio button for each element in the array
-        for (String option : projectionModes) {
-            JRadioButton radioButton = new JRadioButton(option);
-            radioButton.addActionListener(e -> {
-                projectionMode = option;
-                panel.repaint();
-            });
-            group.add(radioButton);
-            sliderPanel.add(radioButton);
-        }
+        JRadioButton rayCastedButton = new JRadioButton(projectionModes[0]);
+        rayCastedButton.addActionListener(e -> {
+            projectionMode = projectionModes[0];
+            panel.repaint();
+        });
+
+        JRadioButton planeButton = new JRadioButton(projectionModes[1]);
+        planeButton.addActionListener(e -> {
+            projectionMode = projectionModes[1];
+            panel.repaint();
+        });
+        group.add(rayCastedButton);
+        sliderPanel.add(rayCastedButton);
+        group.add(planeButton);
+        sliderPanel.add(planeButton);
+
+        rayCastedButton.setSelected(true);
 
         sliderPanel.add(focalSlider);
         sliderPanel.add(distanceSlider);
@@ -164,9 +171,6 @@ public class ShapeDemoWindow {
         g2d.setColor(Color.white);
 
         PositionVector3D pos = shape.getPosition();
-
-        System.err.println("Screen position: " + screenPlane.getOrigin());
-        System.err.println("Focal length: " + screenPlane.eyePos);
 
         ArrayList<Triangle> triangles = new ArrayList<>();
         shape.forEach(triangles::add); // collect triangles
@@ -218,12 +222,6 @@ public class ShapeDemoWindow {
         double angleY = Math.toRadians(dx);
         double angleX = Math.toRadians(dy);
         Stream.of(shapes).forEach(s -> s.rotateAroundCentroid(angleX, angleY, 0));
-    }
-
-    private void rotateShape(int dx, int dy, Shape3D shape) {
-        double angleY = Math.toRadians(dx);
-        double angleX = Math.toRadians(dy);
-        shape.rotateAroundCentroid(angleX, angleY, 0);
     }
 
     private void rotatePlane(int dx, int dy) {
