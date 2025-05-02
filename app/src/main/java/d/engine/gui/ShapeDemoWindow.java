@@ -224,11 +224,4 @@ public class ShapeDemoWindow {
         Stream.of(shapes).forEach(s -> s.rotateAroundCentroid(angleX, angleY, 0));
     }
 
-    private void rotatePlane(int dx, int dy) {
-        double angleY = Math.toRadians(dx); // horizontal drag -> Y-axis rotation
-        double angleX = Math.toRadians(dy); // vertical drag -> X-axis rotation
-
-        screenPlane.rotateAroundPoint(new Point3D(0, 0, 0), angleX, angleY, 0); // You'll need to implement this
-    }
-
 }

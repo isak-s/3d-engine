@@ -22,7 +22,7 @@ public class SingleShapeDemo {
 
         shape.applyScalar(100);
 
-        shape.setPosition(new PositionVector3D(0, 0, 200));
+        shape.setPosition(new PositionVector3D(0, 0, 100));
 
         new ShapeDemoWindow(shapes, screenPlane, "Single shape demo");
 
