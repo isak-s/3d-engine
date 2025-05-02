@@ -1,18 +1,14 @@
 package d.engine;
 
 import d.engine.bodies.Ground;
-import d.engine.bodies.Tetrahedron;
 import d.engine.geometry.PositionVector3D;
 import d.engine.geometry.ScreenPlane;
 import d.engine.geometry.Shape3D;
 import d.engine.gui.GameDemoWindow;
-import d.engine.gui.ShapeDemoWindow;
 
 public class GameDemo {
 
      public static void main(String[] args) {
-
-        System.err.println("game");
 
         Shape3D ground = new Ground(10);
 

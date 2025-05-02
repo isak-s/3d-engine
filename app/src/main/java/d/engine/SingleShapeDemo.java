@@ -1,6 +1,5 @@
 package d.engine;
 
-import d.engine.bodies.D20;
 import d.engine.bodies.Tetrahedron;
 import d.engine.geometry.PositionVector3D;
 import d.engine.geometry.ScreenPlane;

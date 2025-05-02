@@ -52,8 +52,7 @@ public class GameDemoWindow {
     private void rotatePlane(int dx, int dy) {
         double angleY = Math.toRadians(dx); // horizontal drag -> Y-axis rotation
         double angleX = Math.toRadians(dy); // vertical drag -> X-axis rotation
-
-        screenPlane.rotateAroundPoint(screenPlane.eyePos, angleX, angleY, 0);
+        screenPlane.rotateAroundEyePos(angleX, angleY, 0);
     }
 
     private void renderShapes(Graphics g) {
@@ -109,6 +108,8 @@ public class GameDemoWindow {
     private class GamePanel extends JPanel {
         @Override
         protected void paintComponent(Graphics g) {
+            System.err.println("Eyepos: " + screenPlane.eyePos);
+            System.err.println("origin: " + screenPlane.origin);
             super.paintComponent(g);
             setBackground(Color.black);
             renderShapes(g);
@@ -119,8 +120,14 @@ public class GameDemoWindow {
 
         @Override
         public void keyPressed(KeyEvent e) {
+        }
+
+        @Override
+        public void keyTyped(KeyEvent e) {}
+
+        @Override
+        public void keyReleased(KeyEvent e) {
             int key = e.getKeyCode();
-            System.err.println(key);
             if (key == KeyEvent.VK_LEFT) {
                 rotatePlane(-10, 0);
                 panel.repaint();
@@ -130,12 +137,6 @@ public class GameDemoWindow {
                 panel.repaint();
             }
         }
-
-        @Override
-        public void keyTyped(KeyEvent e) {}
-
-        @Override
-        public void keyReleased(KeyEvent e) {}
 
     }
 

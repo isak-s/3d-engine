@@ -2,7 +2,7 @@ package d.engine.geometry;
 
 
 public class Plane {
-    PositionVector3D origin;   // A point on the plane
+    public PositionVector3D origin;   // A point on the plane
     PositionVector3D normal;   // Normal vector (unit length)
     PositionVector3D u;        // Local X axis (unit vector, lies on plane)
     PositionVector3D v;        // Local Y axis (unit vector, lies on plane)

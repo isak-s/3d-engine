@@ -10,13 +10,13 @@ public class ScreenPlane extends Plane {
 
     private double screenWidthMeters;
     private double screenHeightMeters;
-    private int fovYDegrees = 90; // vertical FOV
+    // private int fovYDegrees = 90; // vertical FOV
     private int fovXDegrees = 90; // Horzontal FOV
 
     public ScreenPlane(PositionVector3D origin, PositionVector3D normal) {
         super(origin, normal);
 
-        updateFocalLengthFromFOV();
+        // updateFocalLengthFromFOV();
         this.eyePos = origin.subtract(normal.normalized().multiply(focalLength));
 
         this.u = Constants.SCREEN_PLANE_X;
@@ -57,8 +57,8 @@ public class ScreenPlane extends Plane {
     //Step 3: Calculate intersection point
     PositionVector3D intersection = eyePos.add(rayDir.multiply(t));
 
-    System.out.println("Intersection: " + intersection);
-    System.out.println("Distance from camera: " + intersection.magnitude());
+    // System.out.println("Intersection: " + intersection);
+    // System.out.println("Distance from camera: " + intersection.magnitude());
 
     return new ScreenCoordinate(intersection, true);
     }
@@ -78,6 +78,24 @@ public class ScreenPlane extends Plane {
         // Translate back
         this.eyePos = pivot.add(newRelEye);
         this.origin = pivot.add(newRelOrigin);
+        this.normal = newNormal.normalized();
+        this.u = newU.normalized();
+        this.v = newV.normalized();
+    }
+
+    public void rotateAroundEyePos(double angleX, double angleY, double angleZ) {
+
+        // Translate everything to origin relative to pivot
+        PositionVector3D relOrigin = origin.subtract(eyePos);
+
+        // Apply rotations
+        PositionVector3D newRelOrigin = relOrigin.rotated(eyePos, angleX, angleY, angleZ);
+        PositionVector3D newNormal = normal.rotated(eyePos, angleX, angleY, angleZ);
+        PositionVector3D newU = u.rotated(eyePos, angleX, angleY, angleZ);
+        PositionVector3D newV = v.rotated(eyePos, angleX, angleY, angleZ);
+
+        // Translate back
+        this.origin = eyePos.add(newRelOrigin);
         this.normal = newNormal.normalized();
         this.u = newU.normalized();
         this.v = newV.normalized();

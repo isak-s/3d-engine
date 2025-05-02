@@ -9,7 +9,6 @@ import java.util.stream.Stream;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 
-import d.engine.geometry.Point3D;
 import d.engine.geometry.PositionVector3D;
 import d.engine.geometry.ScreenPlane;
 import d.engine.geometry.Shape3D;
