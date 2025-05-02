@@ -10,12 +10,13 @@ public class ScreenPlane extends Plane {
 
     private double screenWidthMeters;
     private double screenHeightMeters;
-    private double fovYDegrees = 90.0; // vertical FOV
-    private double fovXDegrees = 90.0; // Horzontal FOV
+    private int fovYDegrees = 90; // vertical FOV
+    private int fovXDegrees = 90; // Horzontal FOV
 
     public ScreenPlane(PositionVector3D origin, PositionVector3D normal) {
         super(origin, normal);
 
+        updateFocalLengthFromFOV();
         this.eyePos = origin.subtract(normal.normalized().multiply(focalLength));
 
         this.u = Constants.SCREEN_PLANE_X;
@@ -23,12 +24,6 @@ public class ScreenPlane extends Plane {
 
         calculateScreenSize();
 
-    }
-
-    private void calculateScreenSize() {
-        double fovYRadians = Math.toRadians(fovYDegrees);
-        screenHeightMeters = 2 * focalLength * Math.tan(fovYRadians / 2);
-        screenWidthMeters = screenHeightMeters * Constants.SCREEN_WIDTH / Constants.SCREEN_HEIGHT;
     }
 
     public ScreenCoordinate projectPointRayCasted(Point3D point) {
@@ -88,10 +83,29 @@ public class ScreenPlane extends Plane {
         this.v = newV.normalized();
     }
 
-    public void setFocalLength(double focalLength) {
-        this.focalLength = focalLength;
+    private void calculateScreenSize() {
+        double fovXRadians = Math.toRadians(fovXDegrees);
+        screenHeightMeters = 2 * focalLength * Math.tan(fovXRadians / 2);
+        screenWidthMeters = screenHeightMeters * Constants.SCREEN_WIDTH / Constants.SCREEN_HEIGHT;
+    }
+
+    private void updateFocalLengthFromFOV() {
+        // Use vertical FOV and screen height in pixels to compute focal length in meters
+        double fovXRadians = Math.toRadians(fovXDegrees);
+        this.focalLength = (Constants.SCREEN_HEIGHT / 2.0) / Math.tan(fovXRadians / 2.0);
+
+        // Convert from pixels to meters using a scale (assume 1 pixel = 1 meter for now, or apply a constant if needed)
+    }
+
+    public void setFovX(int fovXDegrees) {
+        this.fovXDegrees = fovXDegrees;
+        updateFocalLengthFromFOV();
         this.eyePos = origin.subtract(normal.normalized().multiply(focalLength));
         calculateScreenSize();
+    }
+
+    public int getFovX() {
+        return fovXDegrees;
     }
 
     @Override

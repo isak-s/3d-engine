@@ -88,15 +88,15 @@ public class ShapeDemoWindow {
         JPanel sliderPanel = new JPanel(new GridLayout(3, 2));
 
         // Focal length slider
-        JSlider focalSlider = new JSlider(1, 100, (int)(Constants.focalLength * 100));
-        focalSlider.setBorder(BorderFactory.createTitledBorder("Focal Length in meters " + Constants.focalLength));
-        focalSlider.addChangeListener(e -> {
-            double focal = focalSlider.getValue() / 100.0;
-            screenPlane.setFocalLength(focal);
+        JSlider FOVSlider = new JSlider(10, 110, screenPlane.getFovX());
+        FOVSlider.setBorder(BorderFactory.createTitledBorder("Field of view: " + screenPlane.getFovX()));
+        FOVSlider.addChangeListener(e -> {
+            int fov = FOVSlider.getValue();
+            screenPlane.setFovX(fov);
 
-            TitledBorder border = (TitledBorder) focalSlider.getBorder();
-            border.setTitle("Focal Length in meters: " + focal);
-            focalSlider.repaint();
+            TitledBorder border = (TitledBorder) FOVSlider.getBorder();
+            border.setTitle("Field of view: " + screenPlane.getFovX());
+            FOVSlider.repaint();
 
             panel.repaint();
         });
@@ -152,7 +152,7 @@ public class ShapeDemoWindow {
 
         rayCastedButton.setSelected(true);
 
-        sliderPanel.add(focalSlider);
+        sliderPanel.add(FOVSlider);
         sliderPanel.add(distanceSlider);
 
         sliderPanel.add(x05Button);

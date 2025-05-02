@@ -16,6 +16,8 @@ public final class Constants {
     public static final PositionVector3D SCREEN_PLANE_Y = new PositionVector3D(0, 1, 0);
 
     public static final double distanceFromObserverToScreen = 25;
-    public static double focalLength = 0.25;  // meters
+    public static final double focalLength = 0.25;  // meters
+
+    public static final int PIXELS_PER_METER = 100;
 
 }
