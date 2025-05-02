@@ -1,0 +1,38 @@
+package d.engine;
+
+import d.engine.bodies.Cube;
+import d.engine.bodies.D20;
+import d.engine.bodies.HexagonalPrism;
+import d.engine.bodies.Tetrahedron;
+import d.engine.geometry.PositionVector3D;
+import d.engine.geometry.ScreenPlane;
+import d.engine.geometry.Shape3D;
+import d.engine.gui.ShapeDemoWindow;
+
+public class MultipleShapeDemo {
+    public static void main(String[] args) {
+        Shape3D d20 = new D20();
+        Shape3D tetrahedron = new Tetrahedron();
+        Shape3D cube = new Cube();
+        Shape3D hexagonalPrism = new HexagonalPrism();
+
+        Shape3D[] shapes = {d20, tetrahedron, cube, hexagonalPrism};
+
+        ScreenPlane screenPlane = new ScreenPlane(new PositionVector3D(0, 0, -300),
+                                                    new PositionVector3D(0, 0, 1));
+
+        screenPlane.setOrigin(new PositionVector3D(0, 0, -90));
+
+        tetrahedron.applyScalar(100);
+        cube.applyScalar(75);
+        hexagonalPrism.applyScalar(50);
+        d20.applyScalar(50);
+
+        tetrahedron.setPosition(new PositionVector3D(-100, 100, 0));
+        cube.setPosition(new PositionVector3D(100, 100, 0));
+        hexagonalPrism.setPosition(new PositionVector3D(-100, -100, 0));
+        d20.setPosition(new PositionVector3D(100, -100, 0));
+
+        new ShapeDemoWindow(shapes, screenPlane, "Multiple shape demo");
+    }
+}

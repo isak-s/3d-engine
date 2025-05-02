@@ -4,18 +4,34 @@ import d.engine.util.Constants;
 
 public class ScreenPlane extends Plane {
 
-    PositionVector3D eyePos;
+    public PositionVector3D eyePos;
+
+    private double focalLength = Constants.focalLength;
+
+    private double screenWidthMeters;
+    private double screenHeightMeters;
+    // private int fovYDegrees = 90; // vertical FOV
+    private int fovXDegrees = 90; // Horzontal FOV
 
     public ScreenPlane(PositionVector3D origin, PositionVector3D normal) {
         super(origin, normal);
 
-        eyePos = new PositionVector3D(origin.x, origin.y, origin.z - Constants.focalLength);
+        // updateFocalLengthFromFOV();
+        this.eyePos = origin.subtract(normal.normalized().multiply(focalLength));
 
-        this.u = new PositionVector3D(1, 0, 0);
-        this.v = new PositionVector3D(0, 1, 0);
+        this.u = Constants.SCREEN_PLANE_X;
+        this.v = Constants.SCREEN_PLANE_Y;
+
+        calculateScreenSize();
+
     }
 
     public ScreenCoordinate projectPointRayCasted(Point3D point) {
+
+    // If the point is behind the observer
+    if (point.subtract(eyePos).dotProduct(normal) < Constants.EPSILON) {
+        return null;
+    }
 
     // Step 1: Construct ray from eye to point
     PositionVector3D rayDir = point.subtract(eyePos).normalized(); // direction of ray
@@ -32,20 +48,19 @@ public class ScreenPlane extends Plane {
     double denominator = rayDir.dotProduct(normal);
 
     // Avoid division by zero — ray is parallel to plane
-    if (Math.abs(denominator) < 1e-6) {
+    if (Math.abs(denominator) < Constants.EPSILON) {
         return null;
     }
 
-    double t = numerator / denominator;
+    double t =  numerator / denominator;
 
     //Step 3: Calculate intersection point
-    PositionVector3D eyeToPoint = new PositionVector3D(rayDir.x, rayDir.y, rayDir.z);
-    eyeToPoint.applyScalar(t);
-    PositionVector3D intersection = eyePos.add(eyeToPoint);
+    PositionVector3D intersection = eyePos.add(rayDir.multiply(t));
 
-    // System.out.println("Distance to point: " + point.subtract(eyePos).magnitude());
+    // System.out.println("Intersection: " + intersection);
+    // System.out.println("Distance from camera: " + intersection.magnitude());
 
-    return new ScreenCoordinate(intersection);
+    return new ScreenCoordinate(intersection, true);
     }
 
     public void rotateAroundPoint(Point3D pivot, double angleX, double angleY, double angleZ) {
@@ -68,15 +83,58 @@ public class ScreenPlane extends Plane {
         this.v = newV.normalized();
     }
 
-    public ScreenCoordinate ScreenCoordinateFromPositionVector(PositionVector3D p) {
-        return new ScreenCoordinate(p);
+    public void rotateAroundEyePos(double angleX, double angleY, double angleZ) {
+
+        // Translate everything to origin relative to pivot
+        PositionVector3D relOrigin = origin.subtract(eyePos);
+
+        // Apply rotations
+        PositionVector3D newRelOrigin = relOrigin.rotated(eyePos, angleX, angleY, angleZ);
+        PositionVector3D newNormal = normal.rotated(eyePos, angleX, angleY, angleZ);
+        PositionVector3D newU = u.rotated(eyePos, angleX, angleY, angleZ);
+        PositionVector3D newV = v.rotated(eyePos, angleX, angleY, angleZ);
+
+        // Translate back
+        this.origin = eyePos.add(newRelOrigin);
+        this.normal = newNormal.normalized();
+        this.u = newU.normalized();
+        this.v = newV.normalized();
     }
 
-    public PositionVector3D getPos() {
-        return origin;
+    private void calculateScreenSize() {
+        double fovXRadians = Math.toRadians(fovXDegrees);
+        screenHeightMeters = 2 * focalLength * Math.tan(fovXRadians / 2);
+        screenWidthMeters = screenHeightMeters * Constants.SCREEN_WIDTH / Constants.SCREEN_HEIGHT;
     }
 
+    private void updateFocalLengthFromFOV() {
+        // Use vertical FOV and screen height in pixels to compute focal length in meters
+        double fovXRadians = Math.toRadians(fovXDegrees);
+        this.focalLength = (Constants.SCREEN_HEIGHT / 2.0) / Math.tan(fovXRadians / 2.0);
 
+        // Convert from pixels to meters using a scale (assume 1 pixel = 1 meter for now, or apply a constant if needed)
+    }
+
+    public void setFovX(int fovXDegrees) {
+        this.fovXDegrees = fovXDegrees;
+        updateFocalLengthFromFOV();
+        this.eyePos = origin.subtract(normal.normalized().multiply(focalLength));
+        calculateScreenSize();
+    }
+
+    public int getFovX() {
+        return fovXDegrees;
+    }
+
+    @Override
+    public void setOrigin(PositionVector3D p) {
+        this.origin = new PositionVector3D(p.x, p.y, p.z);
+        this.eyePos = origin.subtract(normal.normalized().multiply(focalLength));
+    }
+
+    public ScreenCoordinate screenCoordinate(PositionVector3D point) {
+        return new ScreenCoordinate(point);
+    }
 
     public class ScreenCoordinate {
 
@@ -84,7 +142,7 @@ public class ScreenPlane extends Plane {
         private int y;
 
         private ScreenCoordinate(PositionVector3D point) {
-            PositionVector3D rel = point; // point.subtract(origin);
+            PositionVector3D rel = point.subtract(origin);
 
             this.x = Constants.SCREEN_WIDTH/2 + (int) Math.round(rel.dotProduct(u));
             this.y = Constants.SCREEN_HEIGHT/2 - (int) Math.round(rel.dotProduct(v));  // y is inverted
@@ -99,6 +157,25 @@ public class ScreenPlane extends Plane {
         @Override
         public String toString() {
             return "x: " + x + "y: " + y ;
+        }
+
+        private ScreenCoordinate(PositionVector3D point, Boolean fovBased) {
+            PositionVector3D rel = point.subtract(origin);
+
+            double xMeters = rel.dotProduct(u);  // projected X coordinate on plane
+            double yMeters = rel.dotProduct(v);  // projected Y coordinate on plane
+
+            // Convert meters to pixels
+            int xPixels = (int) Math.round(
+                Constants.SCREEN_WIDTH * (xMeters / screenWidthMeters + 0.5)
+            );
+
+            int yPixels = (int) Math.round(
+                Constants.SCREEN_HEIGHT * (0.5 - yMeters / screenHeightMeters)
+            );
+
+            this.x = xPixels;
+            this.y = yPixels;
         }
     }
 }

@@ -9,6 +9,8 @@ public class Triangle {
 
     public Color color;
 
+    public boolean isTransparent = false;
+
     public Triangle(Point3D A, Point3D B, Point3D C) {
 
         // Add some margin for double miscalculations
@@ -33,6 +35,10 @@ public class Triangle {
 
     public Point3D getC() {
         return C;
+    }
+
+    public double averageZ() {
+        return ( A.z + B.z + C.z ) / 3;
     }
 
     private boolean isValidTriangle(Point3D A, Point3D B, Point3D C) {

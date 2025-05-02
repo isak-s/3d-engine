@@ -139,6 +139,10 @@ public class Shape3D implements Iterable<Triangle> {
             .orElseThrow(() -> new RuntimeException("Point not found in pool"));
     }
 
+    public void setTransparrent() {
+        this.forEach(t -> t.isTransparent = true);
+    }
+
     @Override
     public Iterator<Triangle> iterator() {
         return new TriangleIterator();

@@ -38,6 +38,12 @@ public class PositionVector3D extends Point3D {
         return new PositionVector3D(x + other.x, y + other.y, z + other.z);
     }
 
+    public PositionVector3D multiply(double scalar) {
+        PositionVector3D newVec = new PositionVector3D(x, y, z);
+        newVec.applyScalar(scalar);
+        return newVec;
+    }
+
     public double magnitude() {
         return Math.sqrt(x*x + y*y + z*z);
     }
