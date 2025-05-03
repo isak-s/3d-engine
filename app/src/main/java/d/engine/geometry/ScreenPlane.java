@@ -132,6 +132,35 @@ public class ScreenPlane extends Plane {
         this.eyePos = origin.subtract(normal.normalized().multiply(focalLength));
     }
 
+    // Movement /////////////////////////////////////
+
+    public void moveForward(int units) {
+        setOrigin(origin.add(normal.multiply(units)));
+    }
+
+    public void moveBackward(int units) {
+        setOrigin(origin.add(normal.multiply(-units)));
+    }
+
+    public void moveRight(int units) {
+        setOrigin(origin.add(u.multiply(units)));
+    }
+
+    public void moveLeft(int units) {
+        setOrigin(origin.add(u.multiply(-units)));
+    }
+
+    public void moveUp(int units) {
+        setOrigin(origin.add(v.multiply(units)));
+    }
+
+    public void moveDown(int units) {
+        setOrigin(origin.add(v.multiply(-units)));
+    }
+
+    ///////////////////////////////////////////////
+
+
     public ScreenCoordinate screenCoordinate(PositionVector3D point) {
         return new ScreenCoordinate(point);
     }
