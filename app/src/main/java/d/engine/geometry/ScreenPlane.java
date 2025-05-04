@@ -83,19 +83,18 @@ public class ScreenPlane extends Plane {
         this.v = newV.normalized();
     }
 
-    public void rotateAroundEyePos(double angleX, double angleY, double angleZ) {
+    public void rotateAroundOrigin(double angleX, double angleY, double angleZ) {
+        // Translate everything to origin-relative
+        PositionVector3D relEye = eyePos.subtract(origin);
 
-        // Translate everything to origin relative to pivot
-        PositionVector3D relOrigin = origin.subtract(eyePos);
-
-        // Apply rotations
-        PositionVector3D newRelOrigin = relOrigin.rotated(eyePos, angleX, angleY, angleZ);
-        PositionVector3D newNormal = normal.rotated(eyePos, angleX, angleY, angleZ);
-        PositionVector3D newU = u.rotated(eyePos, angleX, angleY, angleZ);
-        PositionVector3D newV = v.rotated(eyePos, angleX, angleY, angleZ);
+        // Apply rotations around origin
+        PositionVector3D newRelEye = relEye.rotated(origin, angleX, angleY, angleZ);
+        PositionVector3D newNormal = normal.rotated(origin, angleX, angleY, angleZ);
+        PositionVector3D newU = u.rotated(origin, angleX, angleY, angleZ);
+        PositionVector3D newV = v.rotated(origin, angleX, angleY, angleZ);
 
         // Translate back
-        this.origin = eyePos.add(newRelOrigin);
+        this.eyePos = origin.add(newRelEye);
         this.normal = newNormal.normalized();
         this.u = newU.normalized();
         this.v = newV.normalized();
@@ -118,7 +117,7 @@ public class ScreenPlane extends Plane {
     public void setFovX(int fovXDegrees) {
         this.fovXDegrees = fovXDegrees;
         updateFocalLengthFromFOV();
-        this.eyePos = origin.subtract(normal.normalized().multiply(focalLength));
+        updateEyePos();
         calculateScreenSize();
     }
 
@@ -129,33 +128,49 @@ public class ScreenPlane extends Plane {
     @Override
     public void setOrigin(PositionVector3D p) {
         this.origin = new PositionVector3D(p.x, p.y, p.z);
-        this.eyePos = origin.subtract(normal.normalized().multiply(focalLength));
+        updateEyePos();
     }
 
     // Movement /////////////////////////////////////
 
     public void moveForward(int units) {
-        setOrigin(origin.add(normal.multiply(units)));
+        PositionVector3D delta = normal.multiply(units);
+        eyePos = eyePos.add(delta);
+        origin = origin.add(delta);
     }
 
     public void moveBackward(int units) {
-        setOrigin(origin.add(normal.multiply(-units)));
+        PositionVector3D delta = normal.multiply(-units);
+        eyePos = eyePos.add(delta);
+        origin = origin.add(delta);
     }
 
     public void moveRight(int units) {
-        setOrigin(origin.add(u.multiply(units)));
+        PositionVector3D delta = u.multiply(units);
+        eyePos = eyePos.add(delta);
+        origin = origin.add(delta);
     }
 
     public void moveLeft(int units) {
-        setOrigin(origin.add(u.multiply(-units)));
+        PositionVector3D delta = u.multiply(-units);
+        eyePos = eyePos.add(delta);
+        origin = origin.add(delta);
     }
 
     public void moveUp(int units) {
-        setOrigin(origin.add(v.multiply(units)));
+        PositionVector3D delta = v.multiply(units);
+        eyePos = eyePos.add(delta);
+        origin = origin.add(delta);
     }
 
     public void moveDown(int units) {
-        setOrigin(origin.add(v.multiply(-units)));
+        PositionVector3D delta = v.multiply(-units);
+        eyePos = eyePos.add(delta);
+        origin = origin.add(delta);
+    }
+
+    private void updateEyePos() {
+        this.eyePos = origin.subtract(normal.normalized().multiply(focalLength));
     }
 
     ///////////////////////////////////////////////

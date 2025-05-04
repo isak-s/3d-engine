@@ -35,7 +35,7 @@ public class Player {
     private void rotatePlane(int dx, int dy) {
         double angleY = Math.toRadians(dx); // horizontal drag -> Y-axis rotation
         double angleX = Math.toRadians(dy); // vertical drag -> X-axis rotation
-        screenPlane.rotateAroundEyePos(angleX, angleY, 0);
+        screenPlane.rotateAroundOrigin(angleX, angleY, 0);
     }
 
     // Movement: Add extra collision logic
