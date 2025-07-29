@@ -11,20 +11,23 @@ import d.engine.geometry.ScreenPlane;
 import d.engine.geometry.Shape3D;
 import d.engine.geometry.Triangle;
 import d.engine.util.Constants;
+import d.engine.game.Player;
 
 
 public class GameDemoWindow {
 
     private String title;
 
+    private Player player;
     private ScreenPlane screenPlane;
     private Shape3D[] shapes;
-    private int lastX, lastY;
+
     private JPanel panel;
 
-    public GameDemoWindow(Shape3D[] shapes, ScreenPlane screenPlane, String title) {
+    public GameDemoWindow(Shape3D[] shapes, Player player, String title) {
         this.shapes = shapes;
-        this.screenPlane = screenPlane;
+        this.screenPlane = player.screenPlane;
+        this.player = player;
         this.title = title;
         javax.swing.SwingUtilities.invokeLater(this::createWindow);
     }
@@ -36,24 +39,21 @@ public class GameDemoWindow {
 
         // Rendering panel
         panel = new GamePanel();
+        player.setPanel(panel);
 
         // key and mouse handling
-        panel.addMouseListener(new GameMouseAdapter());
-        panel.addMouseMotionListener(new GameMouseMotionAdapter());
-        panel.addKeyListener(new GameKeyListener());
+        panel.addMouseListener(player.mouseAdapter);
+        panel.addMouseMotionListener(player.mouseMotionAdapter);
+        panel.addKeyListener(player.keyListener);
 
         frame.add(panel, BorderLayout.CENTER);
         frame.setSize(new Dimension(Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT));
         frame.setVisible(true);
         panel.setFocusable(true);
         panel.requestFocusInWindow();
+
     }
 
-    private void rotatePlane(int dx, int dy) {
-        double angleY = Math.toRadians(dx); // horizontal drag -> Y-axis rotation
-        double angleX = Math.toRadians(dy); // vertical drag -> X-axis rotation
-        screenPlane.rotateAroundEyePos(angleX, angleY, 0);
-    }
 
     private void renderShapes(Graphics g) {
         Stream.of(shapes).forEach(s -> renderShape(g, s));
@@ -116,49 +116,4 @@ public class GameDemoWindow {
         }
     }
 
-    private class GameKeyListener implements KeyListener {
-
-        @Override
-        public void keyPressed(KeyEvent e) {
-        }
-
-        @Override
-        public void keyTyped(KeyEvent e) {}
-
-        @Override
-        public void keyReleased(KeyEvent e) {
-            int key = e.getKeyCode();
-            if (key == KeyEvent.VK_LEFT) {
-                rotatePlane(-10, 0);
-                panel.repaint();
-            }
-            else if (key == KeyEvent.VK_RIGHT) {
-                rotatePlane(10, 0);
-                panel.repaint();
-            }
-        }
-
-    }
-
-    private class GameMouseMotionAdapter extends MouseMotionAdapter {
-        @Override
-        public void mouseDragged(MouseEvent e) {
-            int dx = e.getX() - lastX;
-            int dy = e.getY() - lastY;
-
-            rotatePlane(dx, dy);
-
-            lastX = e.getX();
-            lastY = e.getY();
-            panel.repaint();
-        }
-    }
-
-    private class GameMouseAdapter extends MouseAdapter {
-        @Override
-            public void mousePressed(MouseEvent e) {
-                lastX = e.getX();
-                lastY = e.getY();
-            }
-    }
 }
